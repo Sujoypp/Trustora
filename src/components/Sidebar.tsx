@@ -55,7 +55,7 @@ export function Sidebar() {
   return (
     <nav
       aria-label="Main"
-      className="fixed inset-x-0 bottom-0 z-30 flex h-16 items-center justify-between gap-1 overflow-x-auto border-t px-3 md:inset-x-auto md:bottom-0 md:left-0 md:top-14 md:h-auto md:w-[68px] md:flex-col md:overflow-visible md:border-r md:border-t-0 md:px-0 md:py-4"
+      className="fixed inset-x-0 bottom-0 z-30 flex h-16 items-center justify-between gap-1 overflow-x-auto border-t px-3 md:inset-x-auto md:bottom-0 md:left-0 md:top-[60px] md:h-auto md:w-[68px] md:flex-col md:overflow-visible md:border-r md:border-t-0 md:px-0 md:py-4"
       style={{ borderColor: 'var(--border)', background: 'rgba(3,5,9,0.98)' }}
     >
       <div className="flex flex-1 items-center justify-between gap-1 md:flex-none md:flex-col md:gap-1.5">

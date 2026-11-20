@@ -53,7 +53,7 @@ export function ProductionBanner() {
 
   return (
     <div
-      className="mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-xl border px-4 py-2.5 text-xs"
+      className="mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-xl border px-3.5 py-3 text-xs sm:px-4"
       style={{ borderColor: 'rgba(245,158,11,0.3)', background: 'rgba(245,158,11,0.06)' }}
       role="status"
     >

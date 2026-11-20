@@ -130,7 +130,7 @@ export function SecurityBadge() {
           onClick={() => setOpen((o) => !o)}
           aria-expanded={open}
           aria-label={ok ? 'Security status: all checks pass' : 'Security status: needs attention'}
-          className="ghost-btn hidden min-h-9 items-center gap-1.5 border px-2.5 text-xs font-medium sm:flex"
+          className="ghost-btn pill hidden min-h-9 items-center gap-1.5 border px-2.5 text-xs font-medium sm:flex"
           style={{ borderColor: ok ? 'rgba(16,185,129,0.35)' : 'rgba(245,158,11,0.5)', color: ok ? 'var(--emerald)' : 'var(--amber)' }}
         >
           <Icon className="size-4" aria-hidden="true" />

@@ -16,18 +16,17 @@ export function Header() {
 
   return (
     <header
-      className="fixed inset-x-0 top-0 z-40 flex h-14 items-center justify-between gap-3 border-b px-4 sm:px-6"
-      style={{ borderColor: 'var(--border)', background: 'rgba(3,5,9,0.96)' }}
+      className="fixed inset-x-0 top-0 z-40 flex items-center justify-between gap-2 border-b border-white/10 bg-[#070A12]/95 px-4 py-3 backdrop-blur-xl sm:gap-3 sm:px-6"
     >
       <Logo />
 
-      <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+      <div className="flex shrink-0 items-center gap-2 sm:gap-3">
         {wrongNetwork && (
           <button
             type="button"
             onClick={() => switchChain({ chainId: CHAIN_ID })}
             disabled={isPending}
-            className="ghost-btn flex min-h-9 items-center gap-2 border px-3 text-xs font-medium"
+            className="ghost-btn pill flex min-h-9 items-center gap-2 border px-3 text-xs font-medium"
             style={{ borderColor: 'rgba(245,158,11,0.5)', color: 'var(--amber)' }}
           >
             <span className="size-2 rounded-full" style={{ background: 'var(--amber)' }} />
@@ -43,7 +42,7 @@ export function Header() {
             type="button"
             onClick={() => setOpen(true)}
             aria-label="Wallet account"
-            className="ghost-btn mono flex min-h-9 items-center gap-2 border px-3 text-xs font-medium"
+            className="ghost-btn pill mono flex min-h-9 shrink-0 items-center gap-1.5 border px-2.5 text-xs font-medium sm:gap-2 sm:px-3"
             style={{ borderColor: 'var(--border)', background: 'rgba(255,255,255,0.03)' }}
           >
             <span className="size-2 rounded-full" style={{ background: 'var(--emerald)' }} />
@@ -53,9 +52,9 @@ export function Header() {
         ) : (
           <ConnectKitButton.Custom>
             {({ show, isConnecting }) => (
-              <button onClick={show} className="cta flex min-h-9 items-center gap-2 px-3.5 text-xs font-semibold">
+              <button onClick={show} className="cta cta-pill flex min-h-9 shrink-0 items-center gap-1.5 px-3 text-xs font-semibold sm:gap-2 sm:px-3.5">
                 <Wallet className="size-4" aria-hidden="true" />
-                {isConnecting ? 'Connecting...' : 'Connect wallet'}
+                {isConnecting ? 'Connecting...' : (<>Connect<span className="hidden sm:inline"> wallet</span></>)}
               </button>
             )}
           </ConnectKitButton.Custom>

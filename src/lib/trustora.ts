@@ -30,10 +30,8 @@ export const MAX_NOTE_BYTES = 280
 export const trustoraAbi = parseAbi([
   'function sendNative(address recipient, string note) payable',
   'function sendToken(address token, address recipient, uint256 amount, string note)',
-  'function sendNativeBatch(address[] recipients, uint256[] amounts, string[] notes) payable',
-  'function sendTokenBatch(address token, address[] recipients, uint256[] amounts, string[] notes)',
+  'function MAX_NOTE_BYTES() view returns (uint256)',
   'event PaymentSent(address indexed sender, address indexed recipient, address indexed token, uint256 amount, string note, uint256 timestamp)',
-  'event PaymentFailed(address indexed sender, address indexed recipient, address indexed token, uint256 amount, string note, uint256 timestamp)',
 ])
 
 export type Rail = 'native' | 'erc20'

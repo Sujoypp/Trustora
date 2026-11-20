@@ -149,7 +149,7 @@ export default function App() {
         <Header />
         <Sidebar />
 
-        <main className="mx-auto max-w-[1280px] px-4 pb-24 pt-20 sm:px-6 md:pb-12 md:pl-[92px]">
+        <main className="mx-auto max-w-[1280px] px-4 pb-24 pt-[84px] sm:px-6 md:pb-12 md:pl-[92px]">
           <ProductionBanner />
           <ErrorBoundary resetKey={pageKey}>
             <div key={pageKey} className="anim-enter">

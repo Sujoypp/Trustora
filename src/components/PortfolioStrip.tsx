@@ -73,7 +73,7 @@ export const PortfolioStrip = memo(function PortfolioStrip({ connected, balanceR
   const verified = trust !== null && trust.score >= 70
 
   return (
-    <section className="glass flex flex-col gap-6 p-6 lg:flex-row lg:items-center lg:justify-between sm:p-7" aria-label="Portfolio">
+    <section className="glass flex flex-col gap-5 p-5 sm:gap-6 sm:p-7 lg:flex-row lg:items-center lg:justify-between" aria-label="Portfolio">
       <div className="min-w-0">
         <div className="mb-6 flex flex-wrap items-center gap-2">
           <NetworkPill />

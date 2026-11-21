@@ -32,3 +32,10 @@ export function fullDate(unixSeconds: number): string {
 
 export const noteBytes = (note: string) => new TextEncoder().encode(note).length
 
+
+/** A network fee in USDC (6-decimal view): never shows a misleading 0.0000 for a tiny non-zero fee. */
+export function formatFeeUsdc(raw: bigint): string {
+  if (raw === 0n) return '0'
+  if (raw < 100n) return '<0.0001'
+  return formatUsdc(raw, 4)
+}

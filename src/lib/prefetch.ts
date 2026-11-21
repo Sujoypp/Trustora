@@ -5,6 +5,14 @@ type Loader = () => Promise<{ default: ComponentType }>
 // One loader per screen. The app lazy-loads with these same functions, so a prefetch fills the
 // module cache and opening the screen later is instant.
 export const loadExchange: Loader = () => import('@/pages/ExchangePage').then((m) => ({ default: m.ExchangePage }))
+export const loadSwap: Loader = () => import('@/pages/SwapPage').then((m) => ({ default: m.SwapPage }))
+export const loadBridge: Loader = () => import('@/pages/BridgePage').then((m) => ({ default: m.BridgePage }))
+export const loadEscrow: Loader = () => import('@/pages/EscrowPage').then((m) => ({ default: m.EscrowPage }))
+export const loadInvoices: Loader = () => import('@/pages/InvoicesPage').then((m) => ({ default: m.InvoicesPage }))
+export const loadLinks: Loader = () => import('@/pages/LinksPage').then((m) => ({ default: m.LinksPage }))
+export const loadSplit: Loader = () => import('@/pages/SplitPage').then((m) => ({ default: m.SplitPage }))
+export const loadRecurring: Loader = () => import('@/pages/RecurringPage').then((m) => ({ default: m.RecurringPage }))
+export const loadProof: Loader = () => import('@/pages/ProofPage').then((m) => ({ default: m.ProofPage }))
 export const loadContract: Loader = () => import('@/pages/ContractPage').then((m) => ({ default: m.ContractPage }))
 export const loadHistory: Loader = () => import('@/pages/HistoryPage').then((m) => ({ default: m.HistoryPage }))
 export const loadVault: Loader = () => import('@/pages/SecurityVaultPage').then((m) => ({ default: m.SecurityVaultPage }))
@@ -13,6 +21,14 @@ export const loadSettings: Loader = () => import('@/pages/SettingsPage').then((m
 const ROUTE_LOADERS: Record<string, Loader> = {
   '/send': loadExchange,
   '/receive': loadExchange,
+  '/swap': loadSwap,
+  '/bridge': loadBridge,
+  '/escrow': loadEscrow,
+  '/invoices': loadInvoices,
+  '/links': loadLinks,
+  '/split': loadSplit,
+  '/recurring': loadRecurring,
+  '/proof': loadProof,
   '/contract': loadContract,
   '/history': loadHistory,
   '/vault': loadVault,

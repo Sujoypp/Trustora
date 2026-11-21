@@ -49,7 +49,7 @@ export function TxProgress({ phase, txHash, title }: Props) {
   ]
 
   return createPortal(
-    <div className="anim-enter fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(5,6,12,0.78)' }}>
+    <div className="anim-enter fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(5,7,12,0.8)' }}>
       <div role="dialog" aria-modal="true" aria-labelledby="txp-title" className="glass pop-in w-full max-w-sm p-6">
         <h2 id="txp-title" className="text-base font-semibold">
           {title}

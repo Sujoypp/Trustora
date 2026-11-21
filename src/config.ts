@@ -28,7 +28,8 @@ export const config = createConfig({
   chains: [arcMainnet, mainnet], // mainnet needed for ENS resolution
   connectors: [injected()],
   transports: {
-    [arcMainnet.id]: http(mainnetFacts.rpcUrls[0]),
+    // Retries a few times with a short back-off before the app reports the node as down.
+    [arcMainnet.id]: http(mainnetFacts.rpcUrls[0], { retryCount: 3, retryDelay: 400, timeout: 12_000 }),
     [mainnet.id]: http(), // ENS resolution uses mainnet
   },
 })

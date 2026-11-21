@@ -1,6 +1,8 @@
 import { useBytecode, useReadContract } from 'wagmi'
 import { erc20Abi } from 'viem'
 import { AlertTriangle, Check, ExternalLink, FileCode2, ListChecks, RefreshCw, Wallet } from 'lucide-react'
+import { AddressBadge } from '@/components/AddressBadge'
+import { EcosystemBadges } from '@/components/EcosystemBadges'
 import { PageHeader } from '@/components/PageHeader'
 import { Section } from '@/components/SettingsParts'
 import { StatusPill } from '@/components/ActivityFeed'
@@ -56,6 +58,10 @@ export function ContractPage() {
         }
       />
 
+      <div className="mb-4">
+        <EcosystemBadges />
+      </div>
+
       <div className="space-y-4">
         <Section icon={<FileCode2 className="size-4" />} title="Contract status">
           <p className="flex items-center gap-2 text-lg font-semibold" style={{ color: tone }}>
@@ -68,7 +74,7 @@ export function ContractPage() {
                 <dt className="text-xs uppercase tracking-[0.08em]" style={{ color: 'var(--subtle)' }}>
                   Address
                 </dt>
-                <dd className="mono mt-0.5 break-all">{ROUTER_ADDRESS}</dd>
+                <dd className="mt-1.5"><AddressBadge address={ROUTER_ADDRESS} /></dd>
               </div>
               <div>
                 <dt className="text-xs uppercase tracking-[0.08em]" style={{ color: 'var(--subtle)' }}>
@@ -82,15 +88,25 @@ export function ContractPage() {
                 </dt>
                 <dd className="mt-0.5 tabular-nums">{codeBytes !== null ? `${codeBytes.toLocaleString()} bytes` : '...'}</dd>
               </div>
-              <div className="sm:col-span-2">
+              <div className="flex flex-wrap gap-x-5 gap-y-2 sm:col-span-2">
+                <a
+                  href={`https://arc.etherscan.io/address/${ROUTER_ADDRESS}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-medium underline underline-offset-2"
+                  style={{ color: '#a5b4fc' }}
+                >
+                  View on Arc Etherscan
+                  <ExternalLink className="size-3" aria-hidden="true" />
+                </a>
                 <a
                   href={buildAddressExplorerUrl(CHAIN_ID, ROUTER_ADDRESS)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs underline underline-offset-2"
+                  className="inline-flex items-center gap-1.5 text-xs font-medium underline underline-offset-2"
                   style={{ color: '#a5b4fc' }}
                 >
-                  View the contract on the explorer
+                  View on Arc Explorer
                   <ExternalLink className="size-3" aria-hidden="true" />
                 </a>
               </div>

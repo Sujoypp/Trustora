@@ -10,12 +10,13 @@ import { TxProgress } from '@/components/TxProgress'
 import { ReceivePanel } from '@/components/ReceivePanel'
 import { RecipientField } from '@/components/RecipientField'
 import { MultisigGuard } from '@/components/MultisigGuard'
-import { SponsorPreview } from '@/components/SponsorPreview'
+import { DynamicFeeNote } from '@/components/DynamicFeeNote'
+import { GasInUsdc } from '@/components/GasInUsdc'
 import { useGuard } from '@/lib/guard'
 import { MASK } from '@/lib/prefs'
 import { useSendPayment } from '@/hooks/useSendPayment'
 import { CHAIN_ID, MAX_NOTE_BYTES, ROUTER_ADDRESS, type Payment, type Rail, type ReceiptData } from '@/lib/trustora'
-import { formatUsdc, noteBytes } from '@/lib/format'
+import { formatFeeUsdc, formatUsdc, noteBytes } from '@/lib/format'
 
 /** Reserve used by MAX when no fee estimate exists yet (0.05 USDC, 6-decimal view). */
 const FALLBACK_RESERVE = 50_000n
@@ -221,7 +222,7 @@ export function SendTerminal({ balance, onPending, onSettled, onSuccess, warnAbo
               }}
               placeholder="0.00"
               aria-label="Amount in USDC"
-              className="display w-full min-w-0 bg-transparent text-4xl font-bold tabular-nums outline-none placeholder:text-slate-700"
+              className="display w-full min-w-0 bg-transparent text-4xl font-bold tabular-nums outline-none placeholder:text-[#64748B]"
             />
             <span className="text-sm font-semibold" style={{ color: 'var(--muted)' }}>
               USDC
@@ -257,14 +258,14 @@ export function SendTerminal({ balance, onPending, onSettled, onSuccess, warnAbo
               onChange={(e) => setNote(e.target.value)}
               disabled={busy}
               placeholder="What is this payment for?"
-              className="w-full bg-transparent text-sm outline-none placeholder:text-slate-600"
+              className="w-full bg-transparent text-sm outline-none placeholder:text-[#64748B]"
             />
           </div>
         </label>
 
         <MultisigGuard guard={guard} onChange={patchGuard} disabled={busy} triggered={guardTriggered} />
 
-        <SponsorPreview feeUsdc={fee?.kind === 'send' ? fee.usdc : undefined} disabled={busy} />
+        <GasInUsdc feeUsdc={fee?.usdc} loading={feeLoading} />
 
         <div className="rounded-2xl border px-4 py-3 text-sm" style={{ borderColor: 'var(--border)', background: 'rgba(255,255,255,0.025)' }}>
           <div className="flex items-center justify-between">
@@ -276,7 +277,7 @@ export function SendTerminal({ balance, onPending, onSettled, onSuccess, warnAbo
               {feeLoading ? (
                 <span className="shimmer inline-block h-3.5 w-16 rounded" />
               ) : fee ? (
-                `~${formatUsdc(fee.usdc, 4)} USDC`
+                `~${formatFeeUsdc(fee.usdc)} USDC`
               ) : (
                 '--'
               )}
@@ -287,6 +288,9 @@ export function SendTerminal({ balance, onPending, onSettled, onSuccess, warnAbo
               The payment fee is estimated once the allowance is in place.
             </p>
           )}
+          <div className="mt-2">
+            <DynamicFeeNote />
+          </div>
         </div>
 
         <AnimatePresence initial={false}>

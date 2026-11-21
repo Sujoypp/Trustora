@@ -1,4 +1,4 @@
-export type NavId = 'dashboard' | 'send' | 'receive' | 'contract' | 'history' | 'vault' | 'settings'
+export type NavId = 'dashboard' | 'send' | 'receive' | 'swap' | 'bridge' | 'escrow' | 'invoices' | 'links' | 'split' | 'recurring' | 'proof' | 'contract' | 'history' | 'vault' | 'settings'
 
 export interface Crumb {
   label: string
@@ -32,6 +32,62 @@ export const ROUTES: RouteDef[] = [
     crumbs: [DASH, { label: 'Send & Receive' }],
   },
   {
+    path: '/swap',
+    nav: 'swap',
+    title: 'Circle Swap',
+    subtitle: 'Swap USDC, EURC and cirBTC on Arc Mainnet with a live rate preview.',
+    crumbs: [DASH, { label: 'Circle Swap' }],
+  },
+  {
+    path: '/bridge',
+    nav: 'bridge',
+    title: 'CCTP Bridge',
+    subtitle: 'Move native USDC between Arc Mainnet and other chains with Circle CCTP.',
+    crumbs: [DASH, { label: 'CCTP Bridge' }],
+  },
+  {
+    path: '/escrow',
+    nav: 'escrow',
+    title: 'Escrow & Agreements',
+    subtitle: 'Hold USDC until conditions are met: smart escrow, milestone payments and trust agreements.',
+    crumbs: [DASH, { label: 'Escrow & Agreements' }],
+  },
+  {
+    path: '/invoices',
+    nav: 'invoices',
+    title: 'Smart Invoices',
+    subtitle: 'Create, share and pay invoices recorded onchain.',
+    crumbs: [DASH, { label: 'Smart Invoices' }],
+  },
+  {
+    path: '/links',
+    nav: 'links',
+    title: 'Payment Links',
+    subtitle: 'Shareable USDC payment links and QR codes.',
+    crumbs: [DASH, { label: 'Payment Links' }],
+  },
+  {
+    path: '/split',
+    nav: 'split',
+    title: 'Split Payments',
+    subtitle: 'Send one payment to several wallets in a single transaction.',
+    crumbs: [DASH, { label: 'Split Payments' }],
+  },
+  {
+    path: '/recurring',
+    nav: 'recurring',
+    title: 'Recurring Payments',
+    subtitle: 'Schedule authorized recurring USDC payments.',
+    crumbs: [DASH, { label: 'Recurring Payments' }],
+  },
+  {
+    path: '/proof',
+    nav: 'proof',
+    title: 'Onchain Proof',
+    subtitle: 'Verify transactions and records straight from Arc Mainnet.',
+    crumbs: [DASH, { label: 'Onchain Proof' }],
+  },
+  {
     path: '/contract',
     nav: 'contract',
     title: 'Smart Contract',
@@ -48,9 +104,9 @@ export const ROUTES: RouteDef[] = [
   {
     path: '/vault',
     nav: 'vault',
-    title: 'Security & Mainnet Status',
-    subtitle: 'Live network health, non-custodial security checks and spending protection.',
-    crumbs: [DASH, { label: 'Security & Mainnet Status' }],
+    title: 'Trustora Score & Mainnet Status',
+    subtitle: 'Your Trustora Score, self-custody status, CCTP readiness, live network health and spending protection.',
+    crumbs: [DASH, { label: 'Trustora Score & Mainnet Status' }],
   },
   {
     path: '/settings',

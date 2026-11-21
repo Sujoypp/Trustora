@@ -48,7 +48,7 @@ export function Popover({ open, onOpenChange, trigger, children, width = 288, pl
             exit={{ opacity: 0, scale: 0.96 }}
             transition={{ type: 'spring', stiffness: 380, damping: 28 }}
             className={`glass absolute z-50 rounded-xl p-2 ${PLACEMENT[placement]}`}
-            style={{ position: 'absolute', width: `min(${width}px, calc(100vw - 2rem))`, background: '#0E1320' }}
+            style={{ position: 'absolute', width: `min(${width}px, calc(100vw - 2rem))`, background: '#0C101B' }}
           >
             {children}
           </motion.div>

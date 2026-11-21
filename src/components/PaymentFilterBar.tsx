@@ -66,7 +66,7 @@ export function PaymentFilterBar({ state, tags, total, shown, showDirection = fa
           placeholder="Search memo, address or hash"
           aria-label="Search payments"
           spellCheck={false}
-          className="min-h-10 w-full bg-transparent text-sm outline-none placeholder:text-slate-600"
+          className="min-h-10 w-full bg-transparent text-sm outline-none placeholder:text-[#64748B]"
         />
         {filters.query && (
           <button

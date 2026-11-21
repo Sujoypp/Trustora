@@ -4,9 +4,9 @@ import type { Hex } from 'viem'
 import { toast } from 'sonner'
 import { Background } from '@/components/Background'
 import { AppFooter } from '@/components/AppFooter'
+import { ConnectionStatus } from '@/components/ConnectionStatus'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { Header } from '@/components/Header'
-import { ProductionBanner } from '@/components/ProductionBanner'
 import { Sidebar } from '@/components/Sidebar'
 import { ReceiptModal } from '@/components/ReceiptModal'
 import { DashboardPage } from '@/pages/DashboardPage'
@@ -16,10 +16,18 @@ import { AppContext, type AppData } from '@/lib/appContext'
 import { parsePaymentRequest } from '@/lib/paymentLink'
 import { usePrefs } from '@/lib/prefs'
 import {
+  loadBridge,
+  loadEscrow,
+  loadInvoices,
+  loadLinks,
+  loadProof,
+  loadRecurring,
+  loadSplit,
   loadContract,
   loadExchange,
   loadHistory,
   loadSettings,
+  loadSwap,
   loadVault,
   prefetchAllRoutes,
 } from '@/lib/prefetch'
@@ -30,6 +38,14 @@ import { CHAIN_ID, ROUTER_ADDRESS, type Payment, type ReceiptData } from '@/lib/
 // Only the Dashboard ships in the first bundle; every other screen is preloaded while the browser is idle.
 const ExchangePage = lazy(loadExchange)
 const ContractPage = lazy(loadContract)
+const SwapPage = lazy(loadSwap)
+const BridgePage = lazy(loadBridge)
+const EscrowPage = lazy(loadEscrow)
+const InvoicesPage = lazy(loadInvoices)
+const LinksPage = lazy(loadLinks)
+const SplitPage = lazy(loadSplit)
+const RecurringPage = lazy(loadRecurring)
+const ProofPage = lazy(loadProof)
 const HistoryPage = lazy(loadHistory)
 const SettingsPage = lazy(loadSettings)
 const SecurityVaultPage = lazy(loadVault)
@@ -47,6 +63,14 @@ const PAGES: Record<string, () => ReactElement> = {
   '/': () => <DashboardPage />,
   '/send': () => <ExchangePage />,
   '/receive': () => <ExchangePage />,
+  '/swap': () => <SwapPage />,
+  '/bridge': () => <BridgePage />,
+  '/escrow': () => <EscrowPage />,
+  '/invoices': () => <InvoicesPage />,
+  '/links': () => <LinksPage />,
+  '/split': () => <SplitPage />,
+  '/recurring': () => <RecurringPage />,
+  '/proof': () => <ProofPage />,
   '/contract': () => <ContractPage />,
   '/vault': () => <SecurityVaultPage />,
   '/history': () => <HistoryPage />,
@@ -138,7 +162,9 @@ export default function App() {
     [address, isConnected, balance, balanceLoading, history, pending, onPending, onSettled, onSuccess, refreshBalance, prefs, setPrefs, gasPrice, syncLabel],
   )
 
-  const pageKey = `${route.path === '/receive' ? '/send' : route.path}:${route.idx}`
+  // /send and /receive are one screen (Receive is a modal on top), so opening it keeps the send form as typed.
+  const isExchange = route.path === '/send' || route.path === '/receive'
+  const pageKey = isExchange ? '/send' : `${route.path}:${route.idx}`
   const page = (PAGES[route.path] ?? PAGES['/'])()
 
   return (
@@ -150,7 +176,7 @@ export default function App() {
         <Sidebar />
 
         <main className="mx-auto max-w-[1280px] px-4 pb-24 pt-[84px] sm:px-6 md:pb-12 md:pl-[92px]">
-          <ProductionBanner />
+          <ConnectionStatus />
           <ErrorBoundary resetKey={pageKey}>
             <div key={pageKey} className="anim-enter">
               <Suspense fallback={<PageFallback />}>{page}</Suspense>

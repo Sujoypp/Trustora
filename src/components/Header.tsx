@@ -3,11 +3,10 @@ import { ConnectKitButton, useModal } from 'connectkit'
 import { Wallet } from 'lucide-react'
 import { Logo } from '@/components/Logo'
 import { NetworkPill } from '@/components/NetworkPill'
-import { SecurityBadge } from '@/components/SecurityBadge'
 import { CHAIN_ID, NETWORK_NAME } from '@/lib/trustora'
 import { shortAddress } from '@/lib/format'
 
-/** Slim top bar: logo, network status, security panel and wallet pill. */
+/** Slim top bar: logo, network status pill and wallet button. */
 export function Header() {
   const { address, isConnected, chainId } = useAccount()
   const { switchChain, isPending } = useSwitchChain()
@@ -16,7 +15,7 @@ export function Header() {
 
   return (
     <header
-      className="fixed inset-x-0 top-0 z-40 flex items-center justify-between gap-2 border-b border-white/10 bg-[#070A12]/95 px-4 py-3 backdrop-blur-xl sm:gap-3 sm:px-6"
+      className="fixed inset-x-0 top-0 z-50 flex items-center justify-between gap-2 border-b border-white/10 bg-[#070A12] px-3 py-3 sm:gap-3 sm:px-6"
     >
       <Logo />
 
@@ -35,8 +34,6 @@ export function Header() {
         )}
         <NetworkPill />
 
-        <SecurityBadge />
-
         {isConnected && address ? (
           <button
             type="button"
@@ -54,7 +51,7 @@ export function Header() {
             {({ show, isConnecting }) => (
               <button onClick={show} className="cta cta-pill flex min-h-9 shrink-0 items-center gap-1.5 px-3 text-xs font-semibold sm:gap-2 sm:px-3.5">
                 <Wallet className="size-4" aria-hidden="true" />
-                {isConnecting ? 'Connecting...' : (<>Connect<span className="hidden sm:inline"> wallet</span></>)}
+                {isConnecting ? 'Connecting...' : (<>Connect<span className="hidden sm:inline"> Wallet</span></>)}
               </button>
             )}
           </ConnectKitButton.Custom>

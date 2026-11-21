@@ -1,62 +1,62 @@
-import { ExternalLink, Lock, ShieldCheck } from 'lucide-react'
-import { NetworkMetrics } from '@/components/NetworkPill'
-import { CHAIN, CHAIN_ID, ROUTER_ADDRESS } from '@/lib/trustora'
-import { buildAddressExplorerUrl } from '@/onchain-facts'
+import { useState } from 'react'
+import { Check, Copy } from 'lucide-react'
+import { toast } from 'sonner'
+import { useContractStatus } from '@/lib/contractStatus'
+import { shortAddress } from '@/lib/format'
+import { NETWORK_NAME, ROUTER_ADDRESS } from '@/lib/trustora'
 
-const link = 'inline-flex items-center gap-1 underline decoration-white/20 underline-offset-2 transition-colors duration-150 hover:text-white'
-
-/** Footer: non-custodial security statement, live network numbers and plain-language notices. */
+/** Minimal protocol footer: contract (tap to copy), network and custody status, ecosystem line and one safety notice. */
 export function AppFooter() {
-  const secure = typeof window !== 'undefined' && window.location.protocol === 'https:'
+  const status = useContractStatus()
+  const [copied, setCopied] = useState(false)
+  const verified = status === 'verified'
+
+  async function copy() {
+    if (!ROUTER_ADDRESS) return
+    try {
+      await navigator.clipboard.writeText(ROUTER_ADDRESS)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1800)
+    } catch {
+      toast.error('Could not copy', { id: 'copy-failed', description: 'Select the address and copy it by hand.' })
+    }
+  }
 
   return (
-    <footer className="mt-10 border-t pt-6 text-xs" style={{ borderColor: 'var(--border)', color: 'var(--muted)' }}>
-      <div className="grid gap-5 lg:grid-cols-[1.3fr_1fr] lg:items-start">
-        <div className="flex items-start gap-3">
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-lg" style={{ background: 'rgba(16,185,129,0.12)', color: 'var(--emerald)' }}>
-            <ShieldCheck className="size-5" aria-hidden="true" />
-          </span>
-          <div>
-            <p className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>
-              Non-custodial by design
-            </p>
-            <p className="mt-0.5 text-pretty">
-              Trustora never holds your funds or your keys. Your wallet signs every transaction, and payments go straight from your wallet to the recipient.
-            </p>
-            <p className="mt-1.5 flex items-center gap-1.5" style={{ color: secure ? 'var(--emerald)' : 'var(--amber)' }}>
-              <Lock className="size-3.5" aria-hidden="true" />
-              {secure ? 'Connection encrypted (HTTPS)' : 'Connection is not encrypted'}
-            </p>
-          </div>
-        </div>
+    <footer className="mt-10 border-t pt-4 text-xs" style={{ borderColor: 'var(--border)', color: 'var(--muted)' }}>
+      <div className="flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-x-6">
+        {ROUTER_ADDRESS ? (
+          <button
+            type="button"
+            onClick={() => void copy()}
+            title={`Copy ${ROUTER_ADDRESS}`}
+            aria-label={`Copy contract address ${ROUTER_ADDRESS}`}
+            className="group flex min-h-8 w-fit items-center gap-2 rounded-md text-left transition-colors duration-150 hover:text-white"
+          >
+            <span>{verified ? 'Verified Contract' : 'Contract'}</span>
+            <code className="mono rounded px-1.5 py-0.5" style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--ink)' }}>
+              {shortAddress(ROUTER_ADDRESS)}
+            </code>
+            {copied ? <Check className="size-3.5" style={{ color: 'var(--emerald)' }} aria-hidden="true" /> : <Copy className="size-3.5 opacity-70 group-hover:opacity-100" aria-hidden="true" />}
+            <span aria-live="polite" style={{ color: 'var(--emerald)' }}>
+              {copied ? 'Copied!' : ''}
+            </span>
+          </button>
+        ) : (
+          <span>Contract: not configured yet</span>
+        )}
 
-        <div className="space-y-2 lg:text-right">
-          <p className="eyebrow">Live network</p>
-          <NetworkMetrics />
-        </div>
-      </div>
-
-      <div className="mt-5 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t pt-4" style={{ borderColor: 'var(--border)' }}>
-        <p className="max-w-2xl text-pretty" style={{ color: 'var(--subtle)' }}>
-          Transactions on Arc Mainnet use real funds and cannot be reversed. Trustora is a software interface, not a bank, exchange or custodian, and does not give financial advice.
+        <p className="flex items-center gap-2">
+          <span className="live-dot size-2 shrink-0 rounded-full" style={{ background: 'var(--emerald)' }} aria-hidden="true" />
+          {NETWORK_NAME} • 100% Non-Custodial
         </p>
-        <nav aria-label="Footer links" className="flex flex-wrap items-center gap-x-4 gap-y-1">
-          <a href={CHAIN.explorerBase} target="_blank" rel="noopener noreferrer" className={link}>
-            Block explorer
-            <ExternalLink className="size-3" aria-hidden="true" />
-          </a>
-          {ROUTER_ADDRESS && (
-            <a href={buildAddressExplorerUrl(CHAIN_ID, ROUTER_ADDRESS)} target="_blank" rel="noopener noreferrer" className={link}>
-              Payment contract
-              <ExternalLink className="size-3" aria-hidden="true" />
-            </a>
-          )}
-          <a href="https://www.arc.io" target="_blank" rel="noopener noreferrer" className={link}>
-            Arc
-            <ExternalLink className="size-3" aria-hidden="true" />
-          </a>
-        </nav>
+
+        <p>Built for Arc &amp; Circle USDC</p>
       </div>
+
+      <p className="mt-3 max-w-3xl text-pretty text-[11px]" style={{ color: 'var(--subtle)' }}>
+        Transactions on {NETWORK_NAME} use real funds and cannot be reversed. Trustora is a software interface, not a bank, exchange or custodian, and does not give financial advice.
+      </p>
     </footer>
   )
 }

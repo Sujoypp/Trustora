@@ -49,3 +49,17 @@ export const VaultIcon = ({ className }: IconProps) => (
     <path d="M10.500 10.500V9a1.500 1.500 0 0 1 3 0v1.500" />
   </Duo>
 )
+
+export const SwapIcon = ({ className }: IconProps) => (
+  <Duo className={className}>
+    <circle cx="12" cy="12" r="9" {...FILL} />
+    <path d="M7 9.500h9.500M13.500 6l3 3.500-3 3.500M17 14.500H7.500M10.500 11l-3 3.500 3 3.500" />
+  </Duo>
+)
+
+export const BridgeIcon = ({ className }: IconProps) => (
+  <Duo className={className}>
+    <path d="M3 17c0-5 4-9 9-9s9 4 9 9H3Z" {...FILL} />
+    <path d="M3 17c0-5 4-9 9-9s9 4 9 9M2 17h20M7 17v-4M12 17V8M17 17v-4" />
+  </Duo>
+)

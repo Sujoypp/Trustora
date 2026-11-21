@@ -1,14 +1,14 @@
 import { memo, useEffect, useState } from 'react'
 import { ConnectKitButton } from 'connectkit'
-import { useAccount } from 'wagmi'
-import { BadgeCheck, TrendingDown, TrendingUp } from 'lucide-react'
-import { NetworkPill } from '@/components/NetworkPill'
+import { Send, TrendingDown, TrendingUp } from 'lucide-react'
+import { UsdcVerifiedBadge } from '@/components/UsdcVerifiedBadge'
 import { useCountUp } from '@/hooks/useCountUp'
 import { CURRENCIES, symbolOf, toFiat, useCurrency, useFxRates } from '@/lib/fiat'
-import { formatUsdc, shortAddress } from '@/lib/format'
+import { formatUsdc } from '@/lib/format'
 import { MASK } from '@/lib/prefs'
+import { prefetchRoute } from '@/lib/prefetch'
+import { navigate } from '@/lib/router'
 import { type Payment, NETWORK_NAME } from '@/lib/trustora'
-import type { TrustScore } from '@/lib/trustScore'
 
 interface Props {
   connected: boolean
@@ -16,31 +16,9 @@ interface Props {
   loading: boolean
   hideBalance: boolean
   payments: Payment[]
-  trustEnabled: boolean
-  trust: TrustScore | null
 }
 
 /** Net USDC moved through Trustora in the last 24 hours (received minus sent). */
-/** Wallet connection status for the hero: connected address, or a prompt to connect. */
-function WalletChip() {
-  const { address, isConnected } = useAccount()
-  return (
-    <span
-      className="flex min-h-9 items-center gap-2 rounded-full border px-3 text-xs font-medium"
-      style={{ borderColor: 'var(--border)', color: 'var(--ink-2)' }}
-    >
-      <span className="size-2 rounded-full" style={{ background: isConnected ? 'var(--emerald)' : 'var(--subtle)' }} />
-      {isConnected && address ? (
-        <>
-          Connected <span className="mono">{shortAddress(address, 4, 4)}</span>
-        </>
-      ) : (
-        'Wallet not connected'
-      )}
-    </span>
-  )
-}
-
 function netLastDay(payments: Payment[], now: number): bigint {
   let net = 0n
   for (const p of payments) {
@@ -50,7 +28,8 @@ function netLastDay(payments: Payment[], now: number): bigint {
   return net
 }
 
-export const PortfolioStrip = memo(function PortfolioStrip({ connected, balanceRaw, loading, hideBalance, payments, trustEnabled, trust }: Props) {
+/** Hero: the total balance, a currency switcher and a Quick Send button. */
+export const PortfolioStrip = memo(function PortfolioStrip({ connected, balanceRaw, loading, hideBalance, payments }: Props) {
   const [now, setNow] = useState(() => Math.floor(Date.now() / 1000))
   useEffect(() => {
     const t = setInterval(() => setNow(Math.floor(Date.now() / 1000)), 60_000)
@@ -70,17 +49,12 @@ export const PortfolioStrip = memo(function PortfolioStrip({ connected, balanceR
   const prior = ready ? balanceRaw - net : 0n
   const pct = ready && net !== 0n && prior > 0n ? (Number(net) / Number(prior)) * 100 : null
   const up = net >= 0n
-  const verified = trust !== null && trust.score >= 70
 
   return (
-    <section className="glass flex flex-col gap-5 p-5 sm:gap-6 sm:p-7 lg:flex-row lg:items-center lg:justify-between" aria-label="Portfolio">
+    <section className="glass flex flex-col gap-5 p-5 sm:gap-6 sm:p-7 lg:flex-row lg:items-end lg:justify-between" aria-label="Total balance">
       <div className="min-w-0">
-        <div className="mb-6 flex flex-wrap items-center gap-2">
-          <NetworkPill />
-          <WalletChip />
-        </div>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-          <p className="eyebrow">Total balance</p>
+          <p className="eyebrow">Total Trustora balance</p>
           <div role="radiogroup" aria-label="Display currency" className="inline-flex rounded-lg border p-0.5" style={{ borderColor: 'var(--border)' }}>
             {CURRENCIES.map((c) => {
               const active = currency === c.code
@@ -95,7 +69,7 @@ export const PortfolioStrip = memo(function PortfolioStrip({ connected, balanceR
                   onClick={() => setCurrency(c.code)}
                   title={unavailable ? (fx.failed ? 'Exchange rates could not be loaded' : 'Loading exchange rates') : undefined}
                   className="rounded-md px-2.5 py-1 text-xs font-semibold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-40"
-                  style={{ background: active ? 'rgba(99,102,241,0.25)' : 'transparent', color: active ? '#c7d2fe' : 'var(--muted)' }}
+                  style={{ background: active ? 'rgba(99,102,241,0.25)' : 'transparent', color: active ? '#e0e7ff' : 'var(--muted)' }}
                 >
                   {c.symbol} {c.code}
                 </button>
@@ -103,16 +77,21 @@ export const PortfolioStrip = memo(function PortfolioStrip({ connected, balanceR
             })}
           </div>
         </div>
+
         {connected && (loading || balanceRaw === undefined) ? (
-          <span className="shimmer mt-3 block h-11 w-56 rounded-lg" />
+          <span className="shimmer mt-3 block h-12 w-56 rounded-lg" />
         ) : (
-          <p className="display mt-2 flex flex-wrap items-baseline gap-x-2 text-4xl font-semibold sm:text-[2.75rem]">
-            <span>{sym}{ready ? (hideBalance ? MASK : fiat(animated)) : '0.00'}</span>
+          <p className="display mt-2 flex flex-wrap items-baseline gap-x-2 text-4xl font-bold sm:text-5xl">
+            <span>
+              {sym}
+              {ready ? (hideBalance ? MASK : fiat(animated)) : '0.00'}
+            </span>
             <span className="text-base font-medium" style={{ color: 'var(--muted)' }}>
               {currency}
             </span>
           </p>
         )}
+
         <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm" style={{ color: 'var(--muted)' }}>
           <span>
             {ready ? (hideBalance ? MASK : formatUsdc(animated)) : '0.00'} USDC
@@ -147,56 +126,30 @@ export const PortfolioStrip = memo(function PortfolioStrip({ connected, balanceR
             </span>
           )}
         </div>
+        <div className="mt-4">
+          <UsdcVerifiedBadge />
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-2 sm:flex-row lg:flex-col lg:items-stretch">
+        <button
+          type="button"
+          onClick={() => navigate('/send')}
+          onPointerEnter={() => prefetchRoute('/send')}
+          className="cta flex min-h-12 items-center justify-center gap-2 px-7 text-base font-semibold"
+        >
+          <Send className="size-4" aria-hidden="true" />
+          Quick Send
+        </button>
         {!connected && (
           <ConnectKitButton.Custom>
             {({ show }) => (
-              <button onClick={show} className="cta mt-5 min-h-10 px-5 text-sm font-semibold">
-                Connect wallet
+              <button onClick={show} className="ghost-btn min-h-12 border px-6 text-sm font-semibold" style={{ borderColor: 'var(--border)' }}>
+                Connect Wallet
               </button>
             )}
           </ConnectKitButton.Custom>
         )}
-      </div>
-
-      <div className="flex flex-wrap items-center gap-3">
-      <div
-        className="flex shrink-0 items-center gap-4 rounded-xl border p-4 sm:min-w-[260px]"
-        style={{ borderColor: 'var(--border)', background: 'rgba(255,255,255,0.02)' }}
-        title={trust ? trust.factors.map((f) => `${f.label}: ${f.points}/${f.max}`).join('\n') : undefined}
-      >
-        <span
-          className="flex size-11 items-center justify-center rounded-lg"
-          style={{ background: verified ? 'rgba(16,185,129,0.14)' : 'rgba(99,102,241,0.14)', color: verified ? 'var(--emerald)' : '#a5b4fc' }}
-        >
-          <BadgeCheck className="size-6" aria-hidden="true" />
-        </span>
-        <div className="min-w-0">
-          <p className="eyebrow">Arc Trust Score</p>
-          {trustEnabled && trust === null ? (
-            <span className="shimmer mt-2 block h-6 w-28 rounded-md" />
-          ) : (
-            <p className="mt-1 flex flex-wrap items-baseline gap-x-2">
-              <span className="display text-2xl font-semibold">{trust ? trust.score : '--'}</span>
-              <span className="text-sm" style={{ color: 'var(--muted)' }}>
-                / 100
-              </span>
-              {trust && (
-                <span
-                  className="rounded-md px-1.5 py-0.5 text-[11px] font-semibold"
-                  style={{ background: verified ? 'rgba(16,185,129,0.14)' : 'rgba(99,102,241,0.14)', color: verified ? 'var(--emerald)' : '#a5b4fc' }}
-                >
-                  {verified ? `Verified · ${trust.tier}` : trust.tier}
-                </span>
-              )}
-            </p>
-          )}
-          {!trustEnabled && (
-            <p className="mt-1 text-xs" style={{ color: 'var(--subtle)' }}>
-              Connect to see your score
-            </p>
-          )}
-        </div>
-      </div>
       </div>
     </section>
   )

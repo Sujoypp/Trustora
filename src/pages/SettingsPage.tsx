@@ -131,10 +131,10 @@ export function SettingsPage() {
 
         <Section icon={<ShieldCheck className="size-4" />} title="Security">
           <p className="text-sm" style={{ color: 'var(--muted)' }}>
-            Balance privacy, large-payment warnings and the multisig guard live in the Security Vault.
+            Balance privacy, large-payment warnings and the multisig guard live on the Arc & Circle Ecosystem page.
           </p>
           <button onClick={() => navigate('/vault')} className="cta mt-4 min-h-10 px-5 text-sm font-semibold">
-            Open Security Vault
+            Open Arc & Circle Ecosystem
           </button>
         </Section>
 

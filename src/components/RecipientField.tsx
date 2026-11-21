@@ -31,7 +31,7 @@ export function RecipientField({ value, onChange, disabled }: Props) {
           spellCheck={false}
           autoComplete="off"
           disabled={disabled}
-          className="mono min-h-12 min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-slate-600"
+          className="mono min-h-12 min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-[#64748B]"
         />
         <button
           type="button"

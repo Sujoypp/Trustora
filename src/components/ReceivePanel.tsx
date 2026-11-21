@@ -134,7 +134,7 @@ export function ReceivePanel({ address }: { address?: string }) {
           style={{ background: '#ffffff' }}
         >
           {qrValue ? (
-            <QRCodeSVG value={qrValue} size={176} bgColor="#f6f3ff" fgColor="#090812" level="M" />
+            <QRCodeSVG value={qrValue} size={176} bgColor="#f6f3ff" fgColor="#05070C" level="M" />
           ) : (
             <div className="shimmer size-[176px] rounded-lg" />
           )}

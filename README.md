@@ -6,16 +6,21 @@ Built with [Arc Studio](https://studio.arc.io)
 
 ## Features
 
-- Runs on Arc Mainnet only. There is no network switch and no testnet mode. The top bar shows the live network (block height, node response time and gas), and a banner lists a protocol readiness checklist
-- Dashboard with a hero banner (live USDC balance in USD, EUR or GBP, and an Arc Trust Score) and four core tools
-- Send & Receive: instant USDC transfers (native or ERC-20) with a live network fee estimate, a MAX button, an optional onchain note, QR codes and shareable payment links
-- Smart Contract: live status, holdings and execution details of the Trustora payment contract, with explorer links
-- Transaction History: a searchable live log with status, token and memo-tag filters, a digital receipt for each payment, statement export (PDF, CSV, JSON) and calendar reminders
-- Security & Mainnet Status: live network health, non-custodial security checks, balance privacy, large-payment warnings and a multisig guard preview (co-signer approval is not enforced onchain)
-- A step-by-step transaction window (Signing, Broadcasting, Confirmed) with a link to the transaction on the block explorer
+- Runs on Arc Mainnet only: no network switch and no testnet mode. The top bar shows a live "Arc Mainnet" status pill, and a slim footer shows the contract address (tap to copy) and custody status
+- Dashboard with a hero card (total balance with a USD, EUR or GBP switcher, a "Circle USDC Native" check and a Quick Send button) and six cards: Send & Receive, Swap, Bridge, Smart Contract, History, and Trustora Score & Mainnet Status
+- Send & Receive: instant USDC transfers (native or ERC-20) with a live fee estimate, MAX button, optional onchain note and a locked-on "pay network gas in USDC" switch (Arc's gas token is USDC). Receive opens a modal with a USDC and CCTP readiness badge, a QR code and shareable payment links
+- Circle Swap: swap USDC, EURC and cirBTC on Arc Mainnet with a live rate preview and a slippage choice, using Circle's App Kit. USDC and Arc's native gas token are the same asset, so that pair is not offered
+- CCTP Bridge: move native USDC between Arc Mainnet and Ethereum, Base, Arbitrum, Optimism, Polygon or Avalanche with Circle's Cross-Chain Transfer Protocol and Forwarding Service, with a fee estimate, step list and resume after a failed step
+- Smart Contract: the Trustora payment contract address with one-click copy, live onchain status, explorer links, holdings and your recent executions
+- Transaction History: a searchable log with status, token and memo-tag filters. Selecting a payment opens its digital receipt as a slide-over with the TxID and an explorer link. Statement export (PDF, CSV, JSON) and calendar reminders
+- Trustora Score & Mainnet Status: a transparent score with its breakdown, non-custodial self-custody status, CCTP readiness, live network latency, balance privacy, large-payment warnings and a multisig guard preview (co-signer approval is not enforced onchain)
+- Fee clarity: every fee estimate is shown in USDC with a note that fees on Arc Mainnet are dynamic, not fixed. Amounts are formatted from the exact decimal strings, and rejected or failed actions show a clear inline message
+- Connection status: a notice appears only when the browser is offline, the Arc Mainnet node stops answering (with a Retry button), the wallet is reconnecting, or the wallet disconnected
+- Ecosystem notes: small live badges for Arc Mainnet execution, Circle USDC and CCTP readiness
+- A step-by-step transaction window (Signing, Broadcasting, Confirmed) with an explorer link
 - Clear error messages and notifications for cancelled requests, timeouts, connection loss and low-fee conditions, plus a recovery screen if a page fails
-- A footer with the non-custodial statement and live block height, latency and gas
 - Every sub-page has a "Back to Dashboard" button and breadcrumbs
+- Ambient animated background and logo built from CSS and SVG only
 
 ## Tech stack
 

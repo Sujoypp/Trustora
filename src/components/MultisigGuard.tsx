@@ -68,7 +68,7 @@ export function MultisigGuard({ guard, onChange, disabled, triggered }: Props) {
               placeholder="Co-signer address (0x...)"
               aria-label="Co-signer address"
               spellCheck={false}
-              className="glass-inner mono min-h-10 rounded-xl bg-transparent px-3 text-xs outline-none placeholder:text-slate-600"
+              className="glass-inner mono min-h-10 rounded-xl bg-transparent px-3 text-xs outline-none placeholder:text-[#64748B]"
             />
           </div>
           {cosignerBad && (

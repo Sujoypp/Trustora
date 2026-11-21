@@ -64,13 +64,14 @@ export function ReceiptModal({ receipt, onClose }: Props) {
   if (!receipt) return null
 
   return (
-    <div className="anim-enter fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
+    <div className="anim-enter fixed inset-0 z-[60] flex justify-end" onClick={onClose}>
       <div className="absolute inset-0 bg-black/70" />
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="receipt-title"
-        className="glass pop-in relative max-h-[92dvh] w-full max-w-md overflow-y-auto"
+        className="glass slide-in relative h-full w-full max-w-md overflow-y-auto"
+        style={{ borderRadius: '16px 0 0 16px' }}
         onClick={(e) => e.stopPropagation()}
       >
         <div ref={closeRef} className="px-5 pt-5">

@@ -20,30 +20,19 @@ function useMetrics() {
   return { reading, tone, gweiText, title }
 }
 
-/** Header status pill: live dot, network name and (on wide screens) block, latency and gas. */
+/** Header status pill: pulsing dot and the network name. Live numbers are in the tooltip and the footer. */
 export function NetworkPill() {
-  const { reading, tone, gweiText, title } = useMetrics()
+  const { tone, title } = useMetrics()
 
   return (
     <span
-      className="flex min-h-9 items-center gap-2 rounded-full border px-3 text-xs font-medium"
-      style={{ color: 'var(--ink-2)', borderColor: 'rgba(52,211,153,0.28)' }}
+      className="flex min-h-9 items-center gap-2 rounded-full border px-2.5 text-xs font-medium sm:px-3"
+      style={{ color: 'var(--ink-2)', borderColor: 'rgba(34,211,238,0.35)' }}
       title={title}
     >
       <span className="live-dot size-2 shrink-0 rounded-full" style={{ background: tone }} />
-      <span className="hidden sm:inline">{reading ? `${NETWORK_NAME} Active` : NETWORK_NAME}</span>
+      <span className="hidden sm:inline">{NETWORK_NAME}</span>
       <span className="sr-only sm:hidden">{NETWORK_NAME}</span>
-      {reading ? (
-        <span className="mono hidden items-center gap-2 tabular-nums lg:flex" style={{ color: 'var(--muted)' }}>
-          <span>#{reading.block.toLocaleString()}</span>
-          <span style={{ color: tone }}>{reading.ms} ms</span>
-          {gweiText && <span>{gweiText}</span>}
-        </span>
-      ) : (
-        <span className="hidden lg:inline" style={{ color: 'var(--danger)' }}>
-          Offline
-        </span>
-      )}
     </span>
   )
 }

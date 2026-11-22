@@ -44,7 +44,7 @@ export function Toggle({
         aria-label={label}
         onClick={() => onChange(!checked)}
         className="relative h-7 w-12 shrink-0 rounded-full transition-colors"
-        style={{ background: checked ? '#6366f1' : 'rgba(99,102,241,0.18)' }}
+        style={{ background: checked ? '#4f8cff' : 'rgba(79,140,255,0.18)' }}
       >
         <span
           className="absolute left-0.5 top-0.5 size-6 rounded-full bg-white transition-transform"

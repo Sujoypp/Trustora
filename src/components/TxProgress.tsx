@@ -66,13 +66,13 @@ export function TxProgress({ phase, txHash, title }: Props) {
                 <span
                   className="relative mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full border"
                   style={{
-                    borderColor: s === 'todo' ? 'var(--border)' : s === 'done' ? 'rgba(16,185,129,0.5)' : 'rgba(99,102,241,0.6)',
+                    borderColor: s === 'todo' ? 'var(--border)' : s === 'done' ? 'rgba(16,185,129,0.5)' : 'rgba(79,140,255,0.6)',
                     background: s === 'done' ? 'rgba(16,185,129,0.14)' : 'transparent',
                     color: 'var(--emerald)',
                   }}
                 >
                   {s === 'done' && <Check className="size-3.5" strokeWidth={3} aria-hidden="true" />}
-                  {s === 'active' && <span className="orbit-spinner size-3.5 rounded-full border-2" style={{ borderColor: '#a5b4fc', borderTopColor: 'transparent' }} />}
+                  {s === 'active' && <span className="orbit-spinner size-3.5 rounded-full border-2" style={{ borderColor: '#a9c6ff', borderTopColor: 'transparent' }} />}
                 </span>
                 <div className="min-w-0 text-sm">
                   <p className="font-medium" style={{ color: s === 'todo' ? 'var(--subtle)' : 'var(--ink)' }}>

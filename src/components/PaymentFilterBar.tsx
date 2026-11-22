@@ -38,7 +38,7 @@ function Segment<T extends string>({
               onClick={() => onChange(o.id)}
               className="min-h-8 rounded-full px-3 text-xs font-semibold transition-all"
               style={{
-                background: active ? 'rgba(99,102,241,0.3)' : 'transparent',
+                background: active ? 'rgba(79,140,255,0.3)' : 'transparent',
                 color: active ? '#fff' : 'var(--muted)',
                 }}
             >

@@ -36,7 +36,7 @@ export function AddressBadge({ address, short = false }: Props) {
         onClick={() => void copy()}
         aria-label={copied ? 'Address copied' : 'Copy address'}
         className="ghost-btn flex shrink-0 items-center justify-center gap-1.5 border-t px-3 py-2 text-xs font-semibold sm:border-l sm:border-t-0"
-        style={{ borderColor: 'var(--border)', color: copied ? 'var(--emerald)' : '#a5b4fc' }}
+        style={{ borderColor: 'var(--border)', color: copied ? 'var(--emerald)' : '#a9c6ff' }}
       >
         {copied ? <Check className="size-3.5" aria-hidden="true" /> : <Copy className="size-3.5" aria-hidden="true" />}
         <span aria-live="polite">{copied ? 'Copied!' : 'Copy Address'}</span>

@@ -120,7 +120,7 @@ export function ReceivePanel({ address }: { address?: string }) {
               onClick={() => setQrMode(m)}
               className="min-h-9 rounded-full px-4 text-xs font-semibold capitalize transition-colors"
               style={{
-                background: qrMode === m ? 'rgba(99,102,241,0.25)' : 'transparent',
+                background: qrMode === m ? 'rgba(79,140,255,0.25)' : 'transparent',
                 color: qrMode === m ? 'var(--ink)' : 'var(--muted)',
               }}
             >

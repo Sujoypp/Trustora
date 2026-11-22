@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { ConnectKitButton } from 'connectkit'
 import { isAddress, zeroAddress, type Address } from 'viem'
-import { Plus, Trash2 } from 'lucide-react'
+import { Handshake, Plus, Trash2 } from 'lucide-react'
 import { ContractGate } from '@/components/ContractGate'
+import { EmptyState, ErrorState, LoadingState } from '@/components/states'
 import { DealCard, type Act } from '@/components/DealCard'
 import { EcosystemBadges } from '@/components/EcosystemBadges'
 import { PageHeader } from '@/components/PageHeader'
@@ -11,7 +12,7 @@ import { useNow } from '@/hooks/useNow'
 import { useOnchainTx } from '@/hooks/useOnchainTx'
 import { useApp } from '@/lib/appContext'
 import { AMOUNT_INPUT_RE, endOfDayUnix, parseUsdcInput } from '@/lib/amounts'
-import { ESCROW_ADDRESS, ESCROW_ENV, escrowAbi } from '@/lib/contracts'
+import { ESCROW_ADDRESS, ESCROW_ADDRESS_INVALID, ESCROW_ENV, escrowAbi } from '@/lib/contracts'
 import { formatUsdc } from '@/lib/format'
 
 type Mode = 'escrow' | 'milestones' | 'agreement'
@@ -97,7 +98,7 @@ export function EscrowPage() {
       <div className="mb-4">
         <EcosystemBadges show={['arc', 'usdc']} />
       </div>
-      <ContractGate address={ESCROW_ADDRESS} env={ESCROW_ENV} kind="escrow" feature="Escrow">
+      <ContractGate address={ESCROW_ADDRESS} invalid={ESCROW_ADDRESS_INVALID} env={ESCROW_ENV} kind="escrow" feature="Escrow">
         <div className="space-y-4">
           <section className="glass space-y-4 p-5 sm:p-6" aria-labelledby="escrow-create">
             <div>
@@ -121,7 +122,7 @@ export function EscrowPage() {
                     if (m.id === 'escrow') setRows(rows.slice(0, 1))
                   }}
                   className="rounded-xl border p-3 text-left transition-colors duration-150"
-                  style={{ borderColor: mode === m.id ? 'var(--border-hot)' : 'var(--border)', background: mode === m.id ? 'rgba(99,102,241,0.14)' : 'transparent' }}
+                  style={{ borderColor: mode === m.id ? 'var(--border-hot)' : 'var(--border)', background: mode === m.id ? 'rgba(79,140,255,0.14)' : 'transparent' }}
                 >
                   <span className="block text-sm font-semibold">{m.label}</span>
                   <span className="mt-0.5 block text-xs" style={{ color: 'var(--muted)' }}>
@@ -225,11 +226,11 @@ export function EscrowPage() {
             {!app.address ? (
               <p className="text-sm" style={{ color: 'var(--muted)' }}>Connect your wallet to see deals you take part in.</p>
             ) : deals.isPending ? (
-              <p className="text-sm" style={{ color: 'var(--muted)' }}>Loading deals...</p>
+              <LoadingState label="Loading deals" />
             ) : deals.isError ? (
-              <p className="text-sm" style={{ color: 'var(--amber)' }} role="alert">Could not load deals. Check your connection.</p>
+              <ErrorState title="Could not load deals" description="Check your connection and try again." onRetry={() => void deals.refetch()} />
             ) : deals.data.length === 0 ? (
-              <p className="text-sm" style={{ color: 'var(--muted)' }}>No deals yet. Create one above, or ask someone to name your wallet as the payee.</p>
+              <EmptyState icon={Handshake} title="No deals yet" description="Create one above, or ask someone to name your wallet as the payee." />
             ) : (
               deals.data.map((deal) => <DealCard key={deal.id.toString()} deal={deal} me={app.address as Address} now={now} busy={tx.busy} act={act} />)
             )}

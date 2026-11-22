@@ -19,7 +19,7 @@ export function TxLink({ hash, full = false, className = '' }: Props) {
       rel="noopener noreferrer"
       title="View this transaction on the block explorer"
       className={`mono inline-flex items-center gap-1.5 rounded-md text-xs underline decoration-white/20 underline-offset-2 transition-colors duration-150 hover:decoration-indigo-300 hover:text-white ${full ? 'break-all' : ''} ${className}`}
-      style={{ color: '#a5b4fc' }}
+      style={{ color: '#a9c6ff' }}
     >
       <span>{full ? hash : shortHash(hash)}</span>
       <ExternalLink className="size-3 shrink-0" aria-hidden="true" />

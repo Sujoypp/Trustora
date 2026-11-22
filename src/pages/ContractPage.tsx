@@ -94,7 +94,7 @@ export function ContractPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-xs font-medium underline underline-offset-2"
-                  style={{ color: '#a5b4fc' }}
+                  style={{ color: '#a9c6ff' }}
                 >
                   View on Arc Etherscan
                   <ExternalLink className="size-3" aria-hidden="true" />
@@ -104,7 +104,7 @@ export function ContractPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-xs font-medium underline underline-offset-2"
-                  style={{ color: '#a5b4fc' }}
+                  style={{ color: '#a9c6ff' }}
                 >
                   View on Arc Explorer
                   <ExternalLink className="size-3" aria-hidden="true" />
@@ -139,7 +139,7 @@ export function ContractPage() {
           <ul className="space-y-3">
             {FUNCTIONS.map((f) => (
               <li key={f.sig}>
-                <p className="mono break-all text-xs" style={{ color: '#a5b4fc' }}>
+                <p className="mono break-all text-xs" style={{ color: '#a9c6ff' }}>
                   {f.sig}
                 </p>
                 <p className="mt-0.5 text-sm" style={{ color: 'var(--muted)' }}>
@@ -163,7 +163,7 @@ export function ContractPage() {
               {mine.map((p) => (
                 <li key={p.id} className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 py-2.5 text-sm">
                   <span className="min-w-0">
-                    <span className="mono text-xs" style={{ color: '#a5b4fc' }}>
+                    <span className="mono text-xs" style={{ color: '#a9c6ff' }}>
                       {p.rail === 'native' ? 'sendNative' : 'sendToken'}
                     </span>{' '}
                     <span style={{ color: 'var(--muted)' }}>

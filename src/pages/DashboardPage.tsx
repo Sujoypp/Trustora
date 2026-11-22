@@ -1,6 +1,7 @@
 import { ArrowDownLeft, ArrowUpRight, BadgeCheck, BadgeCheck as ProofIcon, CalendarClock, ExternalLink, FileText, Handshake, Link2, Network, QrCode, Split } from 'lucide-react'
 import { AddressBadge } from '@/components/AddressBadge'
 import { StatusPill } from '@/components/ActivityFeed'
+import { AnalyticsPanel } from '@/components/AnalyticsPanel'
 import { PortfolioStrip } from '@/components/PortfolioStrip'
 import { FeatureCard } from '@/components/FeatureCard'
 import { NetworkMetrics } from '@/components/NetworkPill'
@@ -42,7 +43,7 @@ const TOOLS = [
 
 const muted = { color: 'var(--muted)' } as const
 const strong = { color: 'var(--ink)' } as const
-const linkStyle = { color: '#a5b4fc' } as const
+const linkStyle = { color: '#a9c6ff' } as const
 
 function Chip({ ok, children }: { ok: boolean; children: React.ReactNode }) {
   return (
@@ -78,13 +79,18 @@ export function DashboardPage() {
         />
       </div>
 
+      <div className="rise" style={{ '--i': 1 } as React.CSSProperties}>
+        <AnalyticsPanel payments={payments} balanceRaw={balanceRaw} hideBalance={hide} />
+      </div>
+
+      <h2 className="eyebrow mt-2">Core tools</h2>
       <section aria-label="Core tools" className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <FeatureCard
           title="Send & Receive"
           description="Instant peer-to-peer USDC transfers, a QR code to get paid, and an optional gasless-pay preview."
           to="/send"
           icon={SendIcon}
-          color="#6366f1"
+          color="#4f8cff"
           order={1}
         >
           <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
@@ -98,7 +104,7 @@ export function DashboardPage() {
               type="button"
               onClick={() => navigate('/receive')}
               className="ghost-btn flex min-h-8 items-center gap-1.5 border px-3 text-xs font-medium"
-              style={{ borderColor: 'var(--border)', color: '#a5b4fc' }}
+              style={{ borderColor: 'var(--border)', color: '#a9c6ff' }}
             >
               <QrCode className="size-3.5" aria-hidden="true" />
               Receive with QR
@@ -125,7 +131,7 @@ export function DashboardPage() {
           description="Move native USDC between Arc Mainnet and other chains with Circle's Cross-Chain Transfer Protocol."
           to="/bridge"
           icon={BridgeIcon}
-          color="#6366f1"
+          color="#4f8cff"
           order={3}
         >
           <Chip ok={cctp === 'ready'}>
@@ -172,7 +178,7 @@ export function DashboardPage() {
           description="Your latest activity. Select a payment to open its digital receipt."
           to="/history"
           icon={HistoryIcon}
-          color="#6366f1"
+          color="#4f8cff"
           order={5}
         >
           {recent.length === 0 ? (
@@ -190,7 +196,7 @@ export function DashboardPage() {
                       className="flex w-full items-center justify-between gap-3 rounded-md py-1.5 text-left transition-colors duration-150 hover:bg-white/[0.04]"
                     >
                       <span className="flex min-w-0 items-center gap-2">
-                        <Arrow className="size-3.5 shrink-0" style={{ color: received ? 'var(--emerald)' : '#a5b4fc' }} aria-hidden="true" />
+                        <Arrow className="size-3.5 shrink-0" style={{ color: received ? 'var(--emerald)' : '#a9c6ff' }} aria-hidden="true" />
                         <span className="truncate font-medium tabular-nums" style={strong}>
                           {received ? '+' : '-'}
                           {hide ? MASK : formatUsdc(p.amountRaw)} USDC
@@ -222,7 +228,7 @@ export function DashboardPage() {
                 {trust.result ? trust.result.score : '--'}
               </span>
               <span style={muted}>/ 100</span>
-              {trust.result && <span className="font-semibold" style={{ color: trust.result.score >= 70 ? 'var(--emerald)' : '#a5b4fc' }}>{trust.result.tier}</span>}
+              {trust.result && <span className="font-semibold" style={{ color: trust.result.score >= 70 ? 'var(--emerald)' : '#a9c6ff' }}>{trust.result.tier}</span>}
               {!trust.enabled && <span style={muted}>Connect to see your score</span>}
             </div>
             <div style={muted}>
@@ -236,7 +242,7 @@ export function DashboardPage() {
         <h2 className="eyebrow">Payment tools</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {TOOLS.map((tool, i) => (
-            <FeatureCard key={tool.to} title={tool.title} description={tool.description} to={tool.to} icon={tool.icon} color={i % 2 ? '#22d3ee' : '#6366f1'} order={7 + i}>
+            <FeatureCard key={tool.to} title={tool.title} description={tool.description} to={tool.to} icon={tool.icon} color={i % 2 ? '#22d3ee' : '#4f8cff'} order={7 + i}>
               <span className="font-semibold" style={{ color: tool.contract ? 'var(--emerald)' : tool.contract === undefined ? 'var(--muted)' : 'var(--amber)' }}>
                 {tool.contract === undefined ? 'Works with your wallet' : tool.contract ? 'Contract configured' : 'Contract not set up yet'}
               </span>

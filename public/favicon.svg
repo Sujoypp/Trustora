@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="m" x1="8" y1="4" x2="56" y2="60" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffffff"/><stop offset=".28" stop-color="#9fb0cc"/><stop offset=".5" stop-color="#eaf1fc"/><stop offset=".78" stop-color="#6f819f"/><stop offset="1" stop-color="#c9d6ea"/>
+    </linearGradient>
+    <linearGradient id="b" x1="12" y1="8" x2="52" y2="58" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#14336f"/><stop offset=".55" stop-color="#0a1a44"/><stop offset="1" stop-color="#050c22"/>
+    </linearGradient>
+    <linearGradient id="l" x1="12" y1="10" x2="52" y2="54" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#67e8f9"/><stop offset=".55" stop-color="#22d3ee"/><stop offset="1" stop-color="#4f8cff"/>
+    </linearGradient>
+    <radialGradient id="n" cx=".4" cy=".35" r=".75"><stop stop-color="#fff"/><stop offset=".45" stop-color="#9ff0ff"/><stop offset="1" stop-color="#22d3ee"/></radialGradient>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="#050b1f"/>
+  <g transform="translate(32 33) scale(.9) translate(-32 -32)">
+    <path d="M32 5 54 12.5V30c0 13.5-9 22.5-22 28.5C19 52.5 10 43.5 10 30V12.5L32 5Z" fill="url(#b)"/>
+    <path d="M32 5 10 12.5V30c0 13.5 9 22.5 22 28.5V5Z" fill="#fff" fill-opacity=".08"/>
+    <path d="M32 5 54 12.5V30c0 13.5-9 22.5-22 28.5C19 52.5 10 43.5 10 30V12.5L32 5Z" fill="none" stroke="url(#m)" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M32 15.5V25M21 25l1 12.5M43 25l-1 12.5M22 37.5 32 47l10-9.5" stroke="url(#l)" stroke-opacity=".55" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+    <path d="M21 25H43M32 25V47" stroke="#eef8ff" stroke-width="3.2" stroke-linecap="round"/>
+    <g fill="url(#n)" stroke="#fff" stroke-opacity=".7" stroke-width=".7">
+      <circle cx="32" cy="15.5" r="2.6"/><circle cx="21" cy="25" r="2.8"/><circle cx="43" cy="25" r="2.8"/><circle cx="32" cy="25" r="3.2"/><circle cx="22" cy="37.5" r="2.6"/><circle cx="42" cy="37.5" r="2.6"/><circle cx="32" cy="47" r="3"/>
+    </g>
+  </g>
+</svg>

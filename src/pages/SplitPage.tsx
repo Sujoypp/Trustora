@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { ConnectKitButton } from 'connectkit'
 import { isAddress, type Address } from 'viem'
-import { ChevronDown, Plus, Trash2 } from 'lucide-react'
+import { ChevronDown, Plus, Split, Trash2 } from 'lucide-react'
 import { ContractGate } from '@/components/ContractGate'
+import { EmptyState, ErrorState, LoadingState } from '@/components/states'
 import { EcosystemBadges } from '@/components/EcosystemBadges'
 import { PageHeader } from '@/components/PageHeader'
 import { TxLink } from '@/components/TxLink'
@@ -10,7 +11,7 @@ import { useSplitLegs, useSplits, type SplitRow } from '@/hooks/useTrustoraData'
 import { useOnchainTx } from '@/hooks/useOnchainTx'
 import { useApp } from '@/lib/appContext'
 import { AMOUNT_INPUT_RE, parseUsdcInput } from '@/lib/amounts'
-import { FLOWS_ADDRESS, FLOWS_ENV, flowsAbi } from '@/lib/contracts'
+import { FLOWS_ADDRESS, FLOWS_ADDRESS_INVALID, FLOWS_ENV, flowsAbi } from '@/lib/contracts'
 import { formatUsdc, fullDate, noteBytes, shortAddress } from '@/lib/format'
 
 interface Row {
@@ -115,7 +116,7 @@ export function SplitPage() {
       <div className="mb-4">
         <EcosystemBadges show={['arc', 'usdc']} />
       </div>
-      <ContractGate address={FLOWS_ADDRESS} env={FLOWS_ENV} kind="flows" feature="Split payments">
+      <ContractGate address={FLOWS_ADDRESS} invalid={FLOWS_ADDRESS_INVALID} env={FLOWS_ENV} kind="flows" feature="Split payments">
         <div className="space-y-4">
           <section className="glass space-y-4 p-5 sm:p-6" aria-labelledby="split-title">
             <div>
@@ -127,7 +128,7 @@ export function SplitPage() {
 
             <div role="radiogroup" aria-label="Split by" className="inline-flex rounded-lg border p-0.5" style={{ borderColor: 'var(--border)' }}>
               {(['amount', 'percent'] as const).map((m) => (
-                <button key={m} type="button" role="radio" aria-checked={mode === m} onClick={() => setMode(m)} className="rounded-md px-3 py-1.5 text-xs font-semibold transition-colors duration-150" style={{ background: mode === m ? 'rgba(99,102,241,0.25)' : 'transparent', color: mode === m ? '#e0e7ff' : 'var(--muted)' }}>
+                <button key={m} type="button" role="radio" aria-checked={mode === m} onClick={() => setMode(m)} className="rounded-md px-3 py-1.5 text-xs font-semibold transition-colors duration-150" style={{ background: mode === m ? 'rgba(79,140,255,0.25)' : 'transparent', color: mode === m ? '#e4eeff' : 'var(--muted)' }}>
                   {m === 'amount' ? 'Exact amounts' : 'Percentages'}
                 </button>
               ))}
@@ -187,9 +188,9 @@ export function SplitPage() {
           <section aria-labelledby="split-history" className="space-y-3">
             <h2 id="split-history" className="eyebrow">Your splits</h2>
             {!app.address ? <p className="text-sm" style={{ color: 'var(--muted)' }}>Connect your wallet to see your splits.</p>
-              : history.isPending ? <p className="text-sm" style={{ color: 'var(--muted)' }}>Loading...</p>
-              : history.isError ? <p className="text-sm" style={{ color: 'var(--amber)' }} role="alert">Could not load your splits.</p>
-              : history.data.length === 0 ? <p className="text-sm" style={{ color: 'var(--muted)' }}>No splits yet.</p>
+              : history.isPending ? <LoadingState label="Loading splits" rows={2} />
+              : history.isError ? <ErrorState title="Could not load your splits" onRetry={() => void history.refetch()} />
+              : history.data.length === 0 ? <EmptyState icon={Split} title="No splits yet" description="Your split payments will be listed here with their recipients." />
               : <ul className="space-y-2">{history.data.map((r) => <SplitHistory key={r.id.toString()} row={r} />)}</ul>}
           </section>
         </div>

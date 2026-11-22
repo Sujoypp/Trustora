@@ -144,7 +144,7 @@ export function SendTerminal({ balance, onPending, onSettled, onSuccess, warnAbo
             onClick={() => onTabChange(id)}
             className="flex min-h-11 items-center justify-center gap-2 rounded-full text-sm font-semibold transition-all"
             style={{
-              background: tab === id ? 'rgba(99,102,241,0.28)' : 'transparent',
+              background: tab === id ? 'rgba(79,140,255,0.28)' : 'transparent',
               color: tab === id ? '#fff' : 'var(--muted)',
               }}
           >
@@ -161,7 +161,7 @@ export function SendTerminal({ balance, onPending, onSettled, onSuccess, warnAbo
         {showRequest && prefill?.fromLink && (
           <div
             className="flex items-start gap-2 rounded-2xl border px-3 py-2.5 text-sm"
-            style={{ borderColor: 'var(--border-hot)', background: 'rgba(99,102,241,0.12)', color: 'var(--ink-2)' }}
+            style={{ borderColor: 'var(--border-hot)', background: 'rgba(79,140,255,0.12)', color: 'var(--ink-2)' }}
           >
             <Info className="mt-0.5 size-4 shrink-0" style={{ color: 'var(--accent)' }} />
             <p className="flex-1 text-pretty">This form was filled in from a payment link. Check the recipient before you send.</p>
@@ -189,8 +189,8 @@ export function SendTerminal({ balance, onPending, onSettled, onSuccess, warnAbo
                   onClick={() => setRail(r.id)}
                   className="rounded-2xl border p-3 text-left transition-all hover:scale-[1.01] active:scale-[0.98]"
                   style={{
-                    borderColor: active ? 'rgba(99,102,241,0.6)' : 'var(--border)',
-                    background: active ? 'rgba(99,102,241,0.09)' : 'rgba(9,8,18,0.5)',
+                    borderColor: active ? 'rgba(79,140,255,0.6)' : 'var(--border)',
+                    background: active ? 'rgba(79,140,255,0.09)' : 'rgba(9,8,18,0.5)',
                     }}
                 >
                   <span className="flex items-center gap-2 text-sm font-semibold">
@@ -237,7 +237,7 @@ export function SendTerminal({ balance, onPending, onSettled, onSuccess, warnAbo
               onClick={fillMax}
               disabled={busy || balanceRaw === undefined}
               className="ghost-btn min-h-8 rounded-lg border px-3 font-semibold tracking-wide disabled:opacity-40"
-              style={{ borderColor: 'rgba(99,102,241,0.35)', color: 'var(--accent)' }}
+              style={{ borderColor: 'rgba(79,140,255,0.35)', color: 'var(--accent)' }}
             >
               MAX
             </button>

@@ -1,0 +1,15 @@
+# Secrets and local config: never commit these
+.env
+.env.*
+!.env.example
+.circle/
+recovery_file*
+
+# Build output and caches
+node_modules/
+dist/
+contracts/out/
+contracts/cache/
+cache/
+console.jsonl
+traces.jsonl

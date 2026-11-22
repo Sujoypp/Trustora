@@ -69,7 +69,7 @@ export function PageHeader({ actions, title, subtitle }: Props) {
   return (
     <>
       {/* Direct child of the page container so it stays pinned under the top bar while the page scrolls. */}
-      <div className="sticky top-[60px] z-20 flex flex-wrap items-center gap-x-4 gap-y-3 py-2" style={{ background: 'var(--bg)' }}>
+      <div className="blur-surface sticky top-16 z-20 -mx-1 flex flex-wrap items-center gap-x-4 gap-y-3 px-1 py-2" style={{ background: 'rgba(4, 8, 20, 0.78)' }}>
         <BackButton onClick={() => goBack(def ? parentPath(def) : '/')} label={toDashboard ? 'Back to Dashboard' : 'Back'} />
         <Breadcrumbs />
       </div>

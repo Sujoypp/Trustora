@@ -36,7 +36,7 @@ export function MultisigGuard({ guard, onChange, disabled, triggered }: Props) {
           disabled={disabled}
           onClick={() => onChange({ enabled: !guard.enabled })}
           className="relative h-7 w-12 shrink-0 rounded-full transition-colors"
-          style={{ background: guard.enabled ? '#6366f1' : 'rgba(255,255,255,0.12)' }}
+          style={{ background: guard.enabled ? '#4f8cff' : 'rgba(255,255,255,0.12)' }}
         >
           <span className="absolute left-0.5 top-0.5 size-6 rounded-full bg-white transition-transform" style={{ transform: guard.enabled ? 'translateX(20px)' : 'none' }} />
         </button>

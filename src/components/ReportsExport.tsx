@@ -31,9 +31,9 @@ function Choice<T extends string>({ label, value, onChange, options }: { label: 
             onClick={() => onChange(o.id)}
             className="rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors duration-150"
             style={{
-              borderColor: value === o.id ? 'rgba(99,102,241,0.6)' : 'var(--border)',
-              background: value === o.id ? 'rgba(99,102,241,0.2)' : 'transparent',
-              color: value === o.id ? '#c7d2fe' : 'var(--muted)',
+              borderColor: value === o.id ? 'rgba(79,140,255,0.6)' : 'var(--border)',
+              background: value === o.id ? 'rgba(79,140,255,0.2)' : 'transparent',
+              color: value === o.id ? '#cfe0ff' : 'var(--muted)',
             }}
           >
             {o.label}

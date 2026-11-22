@@ -30,7 +30,7 @@ export function SecurityPrefs() {
               onClick={() => setPrefs({ warnAbove: v })}
               className="min-h-10 flex-1 rounded-xl px-3 text-sm font-medium tabular-nums transition-colors"
               style={{
-                background: prefs.warnAbove === v ? 'rgba(99,102,241,0.28)' : 'transparent',
+                background: prefs.warnAbove === v ? 'rgba(79,140,255,0.28)' : 'transparent',
                 color: prefs.warnAbove === v ? 'var(--ink)' : 'var(--muted)',
               }}
             >

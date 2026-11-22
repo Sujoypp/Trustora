@@ -226,7 +226,7 @@ export function BridgePanel() {
                 <span className="flex items-center gap-2">
                   <span style={{ color: s.state === 'success' ? 'var(--emerald)' : s.state === 'error' ? 'var(--danger)' : 'var(--muted)' }}>{s.state}</span>
                   {s.explorerUrl && (
-                    <a href={s.explorerUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 underline" style={{ color: '#a5b4fc' }}>
+                    <a href={s.explorerUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 underline" style={{ color: '#a9c6ff' }}>
                       View <ExternalLink className="size-3" aria-hidden="true" />
                     </a>
                   )}

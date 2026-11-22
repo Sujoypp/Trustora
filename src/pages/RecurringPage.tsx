@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { ConnectKitButton } from 'connectkit'
 import { useReadContract } from 'wagmi'
+import { CalendarClock } from 'lucide-react'
 import { erc20Abi, isAddress, type Address } from 'viem'
 import { ContractGate } from '@/components/ContractGate'
+import { EmptyState, ErrorState, LoadingState } from '@/components/states'
 import { EcosystemBadges } from '@/components/EcosystemBadges'
 import { PageHeader } from '@/components/PageHeader'
 import { useSchedules, type ScheduleRow } from '@/hooks/useTrustoraData'
@@ -10,7 +12,7 @@ import { useNow } from '@/hooks/useNow'
 import { useOnchainTx } from '@/hooks/useOnchainTx'
 import { useApp } from '@/lib/appContext'
 import { AMOUNT_INPUT_RE, dateTimeUnix, parseUsdcInput } from '@/lib/amounts'
-import { FLOWS_ADDRESS, FLOWS_ENV, flowsAbi } from '@/lib/contracts'
+import { FLOWS_ADDRESS, FLOWS_ADDRESS_INVALID, FLOWS_ENV, flowsAbi } from '@/lib/contracts'
 import { formatUsdc, fullDate, noteBytes, shortAddress } from '@/lib/format'
 import { CHAIN_ID, USDC_ADDRESS } from '@/lib/trustora'
 
@@ -133,7 +135,7 @@ export function RecurringPage() {
       <div className="mb-4">
         <EcosystemBadges show={['arc', 'usdc']} />
       </div>
-      <ContractGate address={FLOWS_ADDRESS} env={FLOWS_ENV} kind="flows" feature="Recurring payments">
+      <ContractGate address={FLOWS_ADDRESS} invalid={FLOWS_ADDRESS_INVALID} env={FLOWS_ENV} kind="flows" feature="Recurring payments">
         <div className="space-y-4">
           <section className="glass space-y-4 p-5 sm:p-6" aria-labelledby="rec-title">
             <div>
@@ -164,7 +166,7 @@ export function RecurringPage() {
             </div>
             <div className="space-y-2">
               <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={startNow} onChange={(e) => setStartNow(e.target.checked)} className="size-4 accent-indigo-500" />
+                <input type="checkbox" checked={startNow} onChange={(e) => setStartNow(e.target.checked)} className="size-4 accent-blue-500" />
                 First payment is due immediately
               </label>
               {!startNow && (
@@ -210,9 +212,9 @@ export function RecurringPage() {
           <section aria-labelledby="rec-list" className="space-y-3">
             <h2 id="rec-list" className="eyebrow">Your schedules</h2>
             {!app.address ? <p className="text-sm" style={{ color: 'var(--muted)' }}>Connect your wallet to see your schedules.</p>
-              : list.isPending ? <p className="text-sm" style={{ color: 'var(--muted)' }}>Loading schedules...</p>
-              : list.isError ? <p className="text-sm" style={{ color: 'var(--amber)' }} role="alert">Could not load schedules. Check your connection.</p>
-              : rows.length === 0 ? <p className="text-sm" style={{ color: 'var(--muted)' }}>No schedules yet.</p>
+              : list.isPending ? <LoadingState label="Loading schedules" />
+              : list.isError ? <ErrorState title="Could not load schedules" description="Check your connection and try again." onRetry={() => void list.refetch()} />
+              : rows.length === 0 ? <EmptyState icon={CalendarClock} title="No schedules yet" description="Authorize a schedule above and it will be listed here." />
               : rows.map((r) => <ScheduleCard key={r.id.toString()} row={r} me={app.address as Address} now={now} busy={tx.busy} onExecute={() => execute(r.id)} onCancel={() => cancel(r.id)} />)}
           </section>
         </div>

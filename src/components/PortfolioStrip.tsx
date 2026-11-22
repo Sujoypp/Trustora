@@ -1,6 +1,6 @@
 import { memo, useEffect, useState } from 'react'
 import { ConnectKitButton } from 'connectkit'
-import { Send, TrendingDown, TrendingUp } from 'lucide-react'
+import { Network, QrCode, Repeat, Send, TrendingDown, TrendingUp } from 'lucide-react'
 import { UsdcVerifiedBadge } from '@/components/UsdcVerifiedBadge'
 import { useCountUp } from '@/hooks/useCountUp'
 import { CURRENCIES, symbolOf, toFiat, useCurrency, useFxRates } from '@/lib/fiat'
@@ -51,8 +51,19 @@ export const PortfolioStrip = memo(function PortfolioStrip({ connected, balanceR
   const up = net >= 0n
 
   return (
-    <section className="glass flex flex-col gap-5 p-5 sm:gap-6 sm:p-7 lg:flex-row lg:items-end lg:justify-between" aria-label="Total balance">
-      <div className="min-w-0">
+    <section className="glass gradient-border relative flex flex-col gap-6 overflow-hidden p-5 sm:p-8 lg:flex-row lg:items-end lg:justify-between" aria-label="Total balance">
+      <svg className="pointer-events-none absolute -right-16 -top-24 size-80 opacity-60" viewBox="0 0 320 320" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="strip-arc" x1="0" y1="0" x2="320" y2="320" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#4f8cff" stopOpacity="0.6" />
+            <stop offset="1" stopColor="#22d3ee" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <circle cx="160" cy="160" r="150" stroke="url(#strip-arc)" strokeWidth="1" />
+        <circle cx="160" cy="160" r="112" stroke="url(#strip-arc)" strokeWidth="1" strokeDasharray="3 7" />
+        <circle cx="160" cy="160" r="74" stroke="url(#strip-arc)" strokeWidth="1" />
+      </svg>
+      <div className="relative min-w-0">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <p className="eyebrow">Total Trustora balance</p>
           <div role="radiogroup" aria-label="Display currency" className="inline-flex rounded-lg border p-0.5" style={{ borderColor: 'var(--border)' }}>
@@ -69,7 +80,7 @@ export const PortfolioStrip = memo(function PortfolioStrip({ connected, balanceR
                   onClick={() => setCurrency(c.code)}
                   title={unavailable ? (fx.failed ? 'Exchange rates could not be loaded' : 'Loading exchange rates') : undefined}
                   className="rounded-md px-2.5 py-1 text-xs font-semibold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-40"
-                  style={{ background: active ? 'rgba(99,102,241,0.25)' : 'transparent', color: active ? '#e0e7ff' : 'var(--muted)' }}
+                  style={{ background: active ? 'rgba(79,140,255,0.25)' : 'transparent', color: active ? '#e4eeff' : 'var(--muted)' }}
                 >
                   {c.symbol} {c.code}
                 </button>
@@ -81,7 +92,7 @@ export const PortfolioStrip = memo(function PortfolioStrip({ connected, balanceR
         {connected && (loading || balanceRaw === undefined) ? (
           <span className="shimmer mt-3 block h-12 w-56 rounded-lg" />
         ) : (
-          <p className="display mt-2 flex flex-wrap items-baseline gap-x-2 text-4xl font-bold sm:text-5xl">
+          <p className="display mt-2 flex flex-wrap items-baseline gap-x-2 text-4xl font-bold tracking-tight sm:text-6xl">
             <span>
               {sym}
               {ready ? (hideBalance ? MASK : fiat(animated)) : '0.00'}
@@ -131,20 +142,25 @@ export const PortfolioStrip = memo(function PortfolioStrip({ connected, balanceR
         </div>
       </div>
 
-      <div className="flex flex-col gap-2 sm:flex-row lg:flex-col lg:items-stretch">
-        <button
-          type="button"
-          onClick={() => navigate('/send')}
-          onPointerEnter={() => prefetchRoute('/send')}
-          className="cta flex min-h-12 items-center justify-center gap-2 px-7 text-base font-semibold"
-        >
+      <div className="relative flex flex-wrap items-center gap-2 lg:max-w-[24rem] lg:justify-end">
+        <button type="button" onClick={() => navigate('/send')} onPointerEnter={() => prefetchRoute('/send')} className="cta flex min-h-12 items-center justify-center gap-2 px-6 text-base">
           <Send className="size-4" aria-hidden="true" />
           Quick Send
         </button>
+        {[
+          { label: 'Receive', to: '/receive', icon: QrCode },
+          { label: 'Swap', to: '/swap', icon: Repeat },
+          { label: 'Bridge', to: '/bridge', icon: Network },
+        ].map(({ label, to, icon: Icon }) => (
+          <button key={to} type="button" onClick={() => navigate(to)} onPointerEnter={() => prefetchRoute(to)} className="ghost-btn flex min-h-12 items-center justify-center gap-2 border px-4 text-sm font-semibold">
+            <Icon className="size-4" aria-hidden="true" />
+            {label}
+          </button>
+        ))}
         {!connected && (
           <ConnectKitButton.Custom>
             {({ show }) => (
-              <button onClick={show} className="ghost-btn min-h-12 border px-6 text-sm font-semibold" style={{ borderColor: 'var(--border)' }}>
+              <button type="button" onClick={show} className="ghost-btn min-h-12 border px-5 text-sm font-semibold" style={{ borderColor: 'rgba(34,211,238,0.45)', color: '#9fe9f5' }}>
                 Connect Wallet
               </button>
             )}

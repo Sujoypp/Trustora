@@ -7,9 +7,11 @@ import { AppFooter } from '@/components/AppFooter'
 import { ConnectionStatus } from '@/components/ConnectionStatus'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { Header } from '@/components/Header'
+import { BrandMark } from '@/components/Logo'
 import { Sidebar } from '@/components/Sidebar'
 import { ReceiptModal } from '@/components/ReceiptModal'
 import { DashboardPage } from '@/pages/DashboardPage'
+import { LandingPage } from '@/pages/LandingPage'
 import { useUsdcBalance } from '@/hooks/useUsdcBalance'
 import { usePaymentHistory } from '@/hooks/usePaymentHistory'
 import { AppContext, type AppData } from '@/lib/appContext'
@@ -53,7 +55,7 @@ const SecurityVaultPage = lazy(loadVault)
 function PageFallback() {
   return (
     <div className="flex min-h-[40vh] items-center justify-center" role="status" aria-live="polite">
-      <span className="orbit size-8 rounded-full border-2" style={{ borderColor: 'var(--accent)', borderTopColor: 'transparent' }} />
+      <BrandMark className="size-16" />
       <span className="sr-only">Loading</span>
     </div>
   )
@@ -78,7 +80,7 @@ const PAGES: Record<string, () => ReactElement> = {
 }
 
 export default function App() {
-  const { address, isConnected } = useAccount()
+  const { address, isConnected, status } = useAccount()
   const { balance, isLoading: balanceLoading, refetch } = useUsdcBalance(address)
   const history = usePaymentHistory(address)
   const [prefs, setPrefs] = usePrefs()
@@ -132,6 +134,24 @@ export default function App() {
     [refetch, refresh],
   )
 
+  // Visitors with no wallet and no link parameters see the landing page; "Launch App" remembers the choice.
+  const [entered, setEntered] = useState(() => {
+    try {
+      return localStorage.getItem('trustora:entered') === '1'
+    } catch {
+      return false
+    }
+  })
+  const enter = useCallback(() => {
+    try {
+      localStorage.setItem('trustora:entered', '1')
+    } catch {
+      // Private mode: the choice only lasts for this visit.
+    }
+    setEntered(true)
+  }, [])
+  const showLanding = route.path === '/' && !route.search && status === 'disconnected' && !entered
+
   const remaining = history.progress ? history.progress.head - history.progress.scanned : 0n
   const syncLabel =
     !isConnected || !ROUTER_ADDRESS ? 'Idle' : history.error ? 'Retrying' : remaining > 50n ? 'Syncing' : 'Live'
@@ -169,13 +189,16 @@ export default function App() {
 
   return (
     <AppContext.Provider value={data}>
+      {showLanding ? (
+        <LandingPage onEnter={enter} />
+      ) : (
       <div className="min-h-dvh">
         <Background />
         <div className="relative z-10">
         <Header />
         <Sidebar />
 
-        <main className="mx-auto max-w-[1280px] px-4 pb-24 pt-[84px] sm:px-6 md:pb-12 md:pl-[92px]">
+        <main className="mx-auto max-w-[1240px] px-4 pb-28 pt-[88px] sm:px-6 md:pb-12 md:pl-[96px] lg:pl-[272px]">
           <ConnectionStatus />
           <ErrorBoundary resetKey={pageKey}>
             <div key={pageKey} className="anim-enter">
@@ -188,6 +211,7 @@ export default function App() {
         <ReceiptModal receipt={receipt} onClose={() => setReceipt(null)} />
         </div>
       </div>
+      )}
     </AppContext.Provider>
   )
 }

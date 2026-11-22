@@ -1,50 +1,35 @@
-import { memo } from 'react'
+/** Ambient layer behind the app: a faint arc wave and a few drifting particles. CSS and SVG only, no canvas. */
+const PARTICLES = [
+  { x: '8%', s: 3, d: 22, delay: 0, dx: 24 },
+  { x: '19%', s: 2, d: 28, delay: 6, dx: -18 },
+  { x: '31%', s: 3, d: 25, delay: 12, dx: 30 },
+  { x: '44%', s: 2, d: 30, delay: 3, dx: -26 },
+  { x: '57%', s: 3, d: 24, delay: 9, dx: 20 },
+  { x: '66%', s: 2, d: 27, delay: 15, dx: -22 },
+  { x: '77%', s: 3, d: 26, delay: 5, dx: 28 },
+  { x: '88%', s: 2, d: 29, delay: 11, dx: -16 },
+  { x: '95%', s: 3, d: 23, delay: 17, dx: -24 },
+]
 
-const RINGS = [
-  { size: 'min(560px, 80vmin)', border: '1px solid rgba(99,102,241,0.16)', dur: '45s', rev: false, node: '#818cf8' },
-  { size: 'min(860px, 125vmin)', border: '1px dashed rgba(34,211,238,0.10)', dur: '38s', rev: true, node: '#22d3ee' },
-  { size: 'min(1180px, 170vmin)', border: '1px solid rgba(99,102,241,0.10)', dur: '30s', rev: false, node: '#a5b4fc' },
-] as const
-
-const ARCS = [
-  { d: 'M-40 380 C 300 70, 820 40, 1480 300', dur: '7s', delay: '0s' },
-  { d: 'M-40 270 C 420 -20, 940 130, 1480 100', dur: '9s', delay: '-3s' },
-  { d: 'M-40 490 C 460 220, 1000 350, 1480 200', dur: '11s', delay: '-6s' },
-] as const
-
-/**
- * Ambient layer behind the app: concentric orbital rings with slow light nodes, a few glowing SVG arcs with a
- * pulse traveling along them,. Pure CSS and SVG, transform and dash-offset animation only.
- */
-export const Background = memo(function Background() {
+export function Background() {
   return (
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden="true">
-      <svg className="bg-drift absolute inset-x-0 top-0 h-[520px] w-full" viewBox="0 0 1440 520" preserveAspectRatio="xMidYMin slice" fill="none" style={{ maskImage: 'linear-gradient(to bottom, #000 55%, transparent)' }}>
+      <svg className="bg-drift absolute inset-x-0 top-0 h-[520px] w-full" viewBox="0 0 1440 520" preserveAspectRatio="xMidYMin slice" fill="none" style={{ opacity: 0.8, WebkitMaskImage: 'linear-gradient(to bottom, #000 40%, transparent)', maskImage: 'linear-gradient(to bottom, #000 40%, transparent)' }}>
         <defs>
-          <linearGradient id="bg-arc" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1440" y2="0">
-            <stop offset="0" stopColor="#6366F1" />
-            <stop offset="0.55" stopColor="#22D3EE" />
-            <stop offset="1" stopColor="#6366F1" />
+          <linearGradient id="bgArc" x1="0" y1="0" x2="1440" y2="0" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#4f8cff" stopOpacity="0" />
+            <stop offset="0.5" stopColor="#22d3ee" stopOpacity="0.9" />
+            <stop offset="1" stopColor="#8b5cf6" stopOpacity="0" />
           </linearGradient>
         </defs>
-        {ARCS.map((a) => (
-          <g key={a.d}>
-            <path d={a.d} stroke="url(#bg-arc)" strokeOpacity="0.14" strokeWidth="1" />
-            <path d={a.d} pathLength={1} className="arc-pulse" style={{ ['--dur' as string]: a.dur, ['--delay' as string]: a.delay }} stroke="url(#bg-arc)" strokeOpacity="0.2" strokeWidth="5" strokeLinecap="round" />
-            <path d={a.d} pathLength={1} className="arc-pulse" style={{ ['--dur' as string]: a.dur, ['--delay' as string]: a.delay }} stroke="url(#bg-arc)" strokeOpacity="0.85" strokeWidth="1.5" strokeLinecap="round" />
-          </g>
-        ))}
+        <path d="M-40 360 C 260 70, 760 30, 1480 300" stroke="url(#bgArc)" strokeOpacity="0.28" strokeWidth="1" />
+        <path d="M-40 360 C 260 70, 760 30, 1480 300" pathLength="1" stroke="url(#bgArc)" strokeWidth="1.6" strokeLinecap="round" className="arc-pulse" style={{ ['--dur' as string]: '9s' }} />
+        <path d="M-40 460 C 420 210, 980 340, 1480 190" stroke="url(#bgArc)" strokeOpacity="0.2" strokeWidth="1" />
+        <path d="M-40 460 C 420 210, 980 340, 1480 190" pathLength="1" stroke="url(#bgArc)" strokeWidth="1.4" strokeLinecap="round" className="arc-pulse" style={{ ['--dur' as string]: '12s', ['--delay' as string]: '-5s' }} />
       </svg>
-
-      <div className="absolute left-1/2 top-[32%]">
-        {RINGS.map((r) => (
-          <div key={r.size} className="absolute left-1/2 top-1/2 rounded-full" style={{ width: r.size, height: r.size, translate: '-50% -50%', border: r.border }}>
-            <div className={`bg-spin ${r.rev ? 'bg-spin-rev' : ''} absolute inset-0 rounded-full`} style={{ ['--dur' as string]: r.dur }}>
-              <span className="absolute left-1/2 top-0 size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full" style={{ background: r.node, boxShadow: `0 0 10px 2px ${r.node}88` }} />
-            </div>
-          </div>
-        ))}
-      </div>
+      {PARTICLES.map((p, i) => (
+        <span key={i} className="particle" style={{ ['--x' as string]: p.x, ['--s' as string]: `${p.s}px`, ['--d' as string]: `${p.d}s`, ['--delay' as string]: `${-p.delay}s`, ['--dx' as string]: `${p.dx}px` }} />
+      ))}
     </div>
   )
-})
+}

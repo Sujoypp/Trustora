@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { ConnectKitButton } from 'connectkit'
 import { isAddress, zeroAddress, type Address } from 'viem'
-import { Check, Copy, Share2 } from 'lucide-react'
+import { Check, Copy, FileText, Share2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { ContractGate } from '@/components/ContractGate'
+import { EmptyState, ErrorState, LoadingState } from '@/components/states'
 import { EcosystemBadges } from '@/components/EcosystemBadges'
 import { PageHeader } from '@/components/PageHeader'
 import { useInvoice, useInvoices, type InvoiceRow } from '@/hooks/useTrustoraData'
@@ -12,7 +13,7 @@ import { useOnchainTx } from '@/hooks/useOnchainTx'
 import { useShareBase } from '@/hooks/useShareBase'
 import { useApp } from '@/lib/appContext'
 import { AMOUNT_INPUT_RE, endOfDayUnix, parseUsdcInput } from '@/lib/amounts'
-import { FLOWS_ADDRESS, FLOWS_ENV, InvoiceStatus, flowsAbi } from '@/lib/contracts'
+import { FLOWS_ADDRESS, FLOWS_ADDRESS_INVALID, FLOWS_ENV, InvoiceStatus, flowsAbi } from '@/lib/contracts'
 import { formatUsdc, fullDate, noteBytes, shortAddress } from '@/lib/format'
 import { useRoute } from '@/lib/router'
 
@@ -30,7 +31,7 @@ function InvoiceCard({ id, invoice, me, now, busy, base, onPay, onCancel, highli
   const overdue = open && invoice.dueAt !== 0n && BigInt(now) > invoice.dueAt
   const link = base ? `${base}/invoices?invoice=${id.toString()}` : null
   const status = invoice.status === InvoiceStatus.Paid ? 'Paid' : invoice.status === InvoiceStatus.Cancelled ? 'Cancelled' : overdue ? 'Overdue' : 'Open'
-  const color = status === 'Paid' ? 'var(--emerald)' : status === 'Overdue' ? 'var(--amber)' : status === 'Cancelled' ? 'var(--muted)' : '#a5b4fc'
+  const color = status === 'Paid' ? 'var(--emerald)' : status === 'Overdue' ? 'var(--amber)' : status === 'Cancelled' ? 'var(--muted)' : '#a9c6ff'
 
   async function copy() {
     if (!link) return
@@ -151,7 +152,7 @@ export function InvoicesPage() {
       <div className="mb-4">
         <EcosystemBadges show={['arc', 'usdc']} />
       </div>
-      <ContractGate address={FLOWS_ADDRESS} env={FLOWS_ENV} kind="flows" feature="Invoices">
+      <ContractGate address={FLOWS_ADDRESS} invalid={FLOWS_ADDRESS_INVALID} env={FLOWS_ENV} kind="flows" feature="Invoices">
         <div className="space-y-4">
           {linkedId !== undefined && (
             <section aria-label="Linked invoice" className="space-y-2">
@@ -219,11 +220,11 @@ export function InvoicesPage() {
             {!app.address ? (
               <p className="text-sm" style={{ color: 'var(--muted)' }}>Connect your wallet to see invoices you issued or need to pay.</p>
             ) : list.isPending ? (
-              <p className="text-sm" style={{ color: 'var(--muted)' }}>Loading invoices...</p>
+              <LoadingState label="Loading invoices" />
             ) : list.isError ? (
-              <p className="text-sm" style={{ color: 'var(--amber)' }} role="alert">Could not load invoices. Check your connection.</p>
+              <ErrorState title="Could not load invoices" description="Check your connection and try again." onRetry={() => void list.refetch()} />
             ) : rows.length === 0 ? (
-              <p className="text-sm" style={{ color: 'var(--muted)' }}>No invoices yet.</p>
+              <EmptyState icon={FileText} title="No invoices yet" description="Create an invoice above, then copy its link to share it." />
             ) : (
               rows.map((r) => <InvoiceCard key={r.id.toString()} id={r.id} invoice={r.invoice} me={app.address} now={now} busy={tx.busy} base={base} onPay={() => pay(r.id, r.invoice.amount)} onCancel={() => cancel(r.id)} />)
             )}

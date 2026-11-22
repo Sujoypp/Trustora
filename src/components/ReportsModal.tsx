@@ -50,7 +50,7 @@ export function ReportsModal({ onClose }: { onClose: () => void }) {
                 aria-selected={tab === t.id}
                 onClick={() => setTab(t.id)}
                 className="rounded-md px-3 py-1.5 text-sm font-medium transition-colors duration-150"
-                style={{ background: tab === t.id ? 'rgba(99,102,241,0.25)' : 'transparent', color: tab === t.id ? '#c7d2fe' : 'var(--muted)' }}
+                style={{ background: tab === t.id ? 'rgba(79,140,255,0.25)' : 'transparent', color: tab === t.id ? '#cfe0ff' : 'var(--muted)' }}
               >
                 {t.label}
               </button>

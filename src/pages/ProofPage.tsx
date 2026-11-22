@@ -98,7 +98,7 @@ function ProofResult({ hash }: { hash: Hex }) {
         <ul className="space-y-2">
           {p.events.map((e, i) => (
             <li key={i} className="glass-inner p-3 text-xs">
-              <p className="font-semibold" style={{ color: '#c7d2fe' }}>{e.contract}.{e.event}</p>
+              <p className="font-semibold" style={{ color: '#cfe0ff' }}>{e.contract}.{e.event}</p>
               <pre className="mono mt-1 overflow-x-auto whitespace-pre-wrap break-all" style={{ color: 'var(--muted)' }}>{JSON.stringify(e.args, null, 2)}</pre>
             </li>
           ))}
@@ -128,7 +128,7 @@ function RecordRow({ kind, id, block, title, detail, onVerify }: { kind: RecordK
           {found.isPending ? <span>Looking up the transaction...</span> : found.data ? (
             <>
               <TxLink hash={found.data} />
-              <button type="button" onClick={() => onVerify(found.data as Hex)} className="underline" style={{ color: '#a5b4fc' }}>Verify this transaction</button>
+              <button type="button" onClick={() => onVerify(found.data as Hex)} className="underline" style={{ color: '#a9c6ff' }}>Verify this transaction</button>
             </>
           ) : <span>The creation transaction could not be found.</span>}
         </div>
@@ -193,7 +193,7 @@ export function ProofPage() {
                     </span>
                     <span className="flex items-center gap-3 text-xs">
                       <TxLink hash={p.txHash} />
-                      <button type="button" onClick={() => { setInput(p.txHash); setHash(p.txHash) }} className="underline" style={{ color: '#a5b4fc' }}>Verify</button>
+                      <button type="button" onClick={() => { setInput(p.txHash); setHash(p.txHash) }} className="underline" style={{ color: '#a9c6ff' }}>Verify</button>
                     </span>
                   </li>
                 ))}
@@ -202,7 +202,7 @@ export function ProofPage() {
                 {schedules.map((r) => <RecordRow key={`s${r.id}`} kind="schedule" id={r.id} block={r.schedule.createdBlock} title={`Recurring schedule #${r.id}`} detail={`${formatUsdc(r.schedule.amount)} USDC`} onVerify={(h) => { setInput(h); setHash(h) }} />)}
                 {splits.map((r) => <RecordRow key={`p${r.id}`} kind="split" id={r.id} block={r.split.createdBlock} title={`Split payment #${r.id}`} detail={`${formatUsdc(r.split.total)} USDC to ${r.split.count} wallets`} onVerify={(h) => { setInput(h); setHash(h) }} />)}
               </ul>
-              <a href={CHAIN.explorerBase} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs underline" style={{ color: '#a5b4fc' }}>
+              <a href={CHAIN.explorerBase} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs underline" style={{ color: '#a9c6ff' }}>
                 Open the Arc Explorer <ExternalLink className="size-3" aria-hidden="true" />
               </a>
             </>

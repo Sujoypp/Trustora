@@ -8,8 +8,14 @@ function readAddress(value: unknown): Address | undefined {
   return typeof value === 'string' && isAddress(value) ? getAddress(value) : undefined
 }
 
-export const ESCROW_ADDRESS = readAddress(import.meta.env.VITE_TRUSTORA_ESCROW_ADDRESS_MAINNET)
-export const FLOWS_ADDRESS = readAddress(import.meta.env.VITE_TRUSTORA_FLOWS_ADDRESS_MAINNET)
+const rawEscrow: unknown = import.meta.env.VITE_TRUSTORA_ESCROW_ADDRESS_MAINNET
+const rawFlows: unknown = import.meta.env.VITE_TRUSTORA_FLOWS_ADDRESS_MAINNET
+
+export const ESCROW_ADDRESS = readAddress(rawEscrow)
+export const FLOWS_ADDRESS = readAddress(rawFlows)
+/** The variable is set but is not a valid address: say so instead of pretending it is missing. */
+export const ESCROW_ADDRESS_INVALID = typeof rawEscrow === 'string' && rawEscrow.trim() !== '' && !ESCROW_ADDRESS
+export const FLOWS_ADDRESS_INVALID = typeof rawFlows === 'string' && rawFlows.trim() !== '' && !FLOWS_ADDRESS
 
 export const ESCROW_ENV = 'VITE_TRUSTORA_ESCROW_ADDRESS_MAINNET'
 export const FLOWS_ENV = 'VITE_TRUSTORA_FLOWS_ADDRESS_MAINNET'

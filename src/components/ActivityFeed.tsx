@@ -1,5 +1,6 @@
 import { memo } from 'react'
-import { ArrowDownLeft, ArrowUpRight, ExternalLink, Inbox } from 'lucide-react'
+import { ArrowDownLeft, ArrowUpRight, CheckCircle2, ExternalLink } from 'lucide-react'
+import { EmptyState } from '@/components/states'
 import { buildTxExplorerUrl } from '@/onchain-facts'
 import { useApp } from '@/lib/appContext'
 import { formatUsdc, fullDate, shortAddress, timeAgo } from '@/lib/format'
@@ -10,14 +11,8 @@ import type { HistoryProgress } from '@/hooks/usePaymentHistory'
 export function StatusPill({ status }: { status: Payment['status'] }) {
   const confirmed = status === 'confirmed'
   return (
-    <span
-      className="inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-medium"
-      style={{
-        background: confirmed ? 'rgba(16,185,129,0.12)' : 'rgba(245,158,11,0.12)',
-        color: confirmed ? 'var(--emerald)' : 'var(--amber)',
-      }}
-    >
-      <span className="size-1.5 rounded-full" style={{ background: 'currentColor' }} />
+    <span className={`chip ${confirmed ? 'chip-ok' : 'chip-warn'}`}>
+      {confirmed ? <CheckCircle2 className="size-3.5" aria-hidden="true" /> : <span className="orbit-spinner size-3 rounded-full border-2" style={{ borderColor: 'currentColor', borderTopColor: 'transparent' }} aria-hidden="true" />}
       {confirmed ? 'Confirmed' : 'Pending'}
     </span>
   )
@@ -66,7 +61,7 @@ export const PaymentRow = memo(function PaymentRow({ payment: p }: { payment: Pa
       >
         <span
           className="flex size-9 shrink-0 items-center justify-center rounded-lg"
-          style={{ background: incoming ? 'rgba(16,185,129,0.12)' : 'rgba(99,102,241,0.14)', color: incoming ? 'var(--emerald)' : '#a5b4fc' }}
+          style={{ background: incoming ? 'rgba(16,185,129,0.12)' : 'rgba(79,140,255,0.14)', color: incoming ? 'var(--emerald)' : '#a9c6ff' }}
         >
           <Icon className="size-4" aria-hidden="true" />
         </span>
@@ -106,15 +101,5 @@ export const PaymentRow = memo(function PaymentRow({ payment: p }: { payment: Pa
 })
 
 export function Empty({ title, text }: { title: string; text: string }) {
-  return (
-    <div className="flex flex-col items-center gap-2 py-10 text-center">
-      <div className="flex size-11 items-center justify-center rounded-xl" style={{ background: 'rgba(99,102,241,0.12)' }}>
-        <Inbox className="size-5" style={{ color: '#a5b4fc' }} aria-hidden="true" />
-      </div>
-      <p className="text-base font-semibold">{title}</p>
-      <p className="max-w-xs text-sm text-pretty" style={{ color: 'var(--muted)' }}>
-        {text}
-      </p>
-    </div>
-  )
+  return <EmptyState title={title} description={text} />
 }

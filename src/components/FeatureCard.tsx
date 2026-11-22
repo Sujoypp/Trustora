@@ -23,7 +23,7 @@ export const FeatureCard = memo(function FeatureCard({ title, description, icon:
   return (
     <div
       className={`glass feature-card rise group relative flex h-full min-h-[200px] w-full flex-col justify-between p-6 ${className}`}
-      style={{ '--i': order, '--c': color, '--duo': color === '#22d3ee' ? '#6366f1' : '#22d3ee' } as CSSProperties}
+      style={{ '--i': order, '--c': color, '--duo': color === '#22d3ee' ? '#4f8cff' : '#22d3ee' } as CSSProperties}
     >
       {/* The whole card opens the tool. Inner links and buttons sit above this layer. */}
       <button
@@ -44,7 +44,7 @@ export const FeatureCard = memo(function FeatureCard({ title, description, icon:
         <ArrowUpRight className="feature-arrow size-4" style={{ color: 'var(--subtle)' }} aria-hidden="true" />
       </span>
       <div className="pointer-events-none relative mt-5">
-        <p className="text-[15px] font-semibold">{title}</p>
+        <p className="display text-base font-semibold">{title}</p>
         <p className="mt-1 text-sm text-pretty" style={{ color: 'var(--muted)' }}>
           {description}
         </p>

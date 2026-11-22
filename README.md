@@ -26,6 +26,34 @@ Built with [Arc Studio](https://studio.arc.io)
 
 React, TypeScript, Vite, Tailwind CSS, wagmi, viem, ConnectKit, Solidity (Foundry, OpenZeppelin)
 
+## Interface
+
+- A public landing page for visitors without a connected wallet (open the app from "Launch App" or by connecting). Payment and invoice links skip it and open the tool directly.
+- A midnight-navy design system with a labeled sidebar on large screens, an icon rail on tablets and a bottom navigation bar on phones.
+- A dashboard with a balance card, real analytics built from your payments, and the core and payment tools.
+
+## Payment tools
+
+- Escrow & Agreements: hold USDC until conditions are met, with milestone approvals, auto-release, disputes through an arbiter, and refunds.
+- Smart Invoices, Split Payments and Recurring Payments: non-custodial, USDC moves straight from payer to recipient.
+- Payment Links and Onchain Proof: shareable links and QR codes, and transaction verification read directly from Arc Mainnet.
+- The new contracts hold or move real USDC. Review them and get an independent audit before deploying them to mainnet.
+
+## Deploying the Escrow contract (Arc Mainnet)
+
+The Escrow screen stays off until `VITE_TRUSTORA_ESCROW_ADDRESS_MAINNET` points at a contract that passes every check. Arc Studio never deploys to mainnet, so you do this from your own machine and wallet. Every step costs real USDC and cannot be undone.
+
+1. Review and test: `forge build` then `forge test`. Get an independent audit before it holds real funds.
+2. Use a dedicated deployer wallet and fund it with a little USDC on Arc Mainnet (gas is paid in USDC; the dry run prints the maximum fee).
+3. Dry run (sends nothing): `DEPLOYER_PRIVATE_KEY=0x... bun run deploy:escrow`. It checks that the RPC is chain 5042, that the Circle USDC address from the onchain registry answers as USDC with 6 decimals, and that the compiled artifact is current.
+4. Deploy: `DEPLOYER_PRIVATE_KEY=0x... bun run deploy:escrow -- --broadcast --write-env`. You must type `DEPLOY TO MAINNET` in the terminal. The key is read only from that variable and is never printed or saved. After deploying, the script reads the contract back (code exists, `usdc()` equals the Circle USDC address) and writes the address to `.env`.
+5. Remix instead of the script: compile `contracts/TrustoraEscrow.sol` with solc 0.8.28, optimizer on at 200 runs, EVM `cancun`, choose the `TrustoraEscrow` contract, and give the Circle USDC address on Arc as the only constructor argument. Then set the address by hand.
+6. Set `VITE_TRUSTORA_ESCROW_ADDRESS_MAINNET` in `.env`, restart the dev server, and add the same variable to your hosting provider before the next build.
+7. Publish the source on the Arc Explorer ("Verify & publish") with the same compiler settings and the constructor argument the script prints.
+8. Try a very small deal first: create, mark delivered, release, and refund paths.
+
+`bun run deploy:flows` deploys the invoice, split and recurring contract the same way.
+
 ## Development
 
 Prerequisites: [Bun](https://bun.sh) and [Foundry](https://getfoundry.sh).
@@ -35,13 +63,16 @@ bun install
 bun run dev      # start the app on port 5173
 bun run check    # lint and typecheck
 bun run build    # production build
-forge build      # compile contracts/TrustoraPay.sol
+forge build      # compile the contracts in contracts/
+forge test       # run the contract tests
 ```
 
 ## Environment variables
 
 - `VITE_TRUSTORA_PAY_ADDRESS_MAINNET`: address of your TrustoraPay contract on Arc Mainnet. Deploy and review it yourself first. Sending and history stay paused until it is set.
 - `VITE_TRUSTORA_PAY_DEPLOY_BLOCK_MAINNET`: block the contract was deployed at. History scans start here.
+- `VITE_TRUSTORA_ESCROW_ADDRESS_MAINNET`: address of your `TrustoraEscrow` contract (escrow, milestone payments, trust agreements). Deploy it yourself with the Arc USDC address as the constructor argument. The Escrow screen stays off until it is set.
+- `VITE_TRUSTORA_FLOWS_ADDRESS_MAINNET`: address of your `TrustoraFlows` contract (invoices, split payments, recurring payments), deployed the same way. Those screens stay off until it is set.
 - `RPC_PROXY_BASE_URL`, `RPC_PROXY_TOKEN`, `RPC_PROXY_CHAINS`: provisioned by Arc Studio. Optional outside Arc Studio.
 
 Restart the dev server after changing `.env`.

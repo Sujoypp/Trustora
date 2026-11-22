@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { usePublicClient } from 'wagmi'
-import type { Address } from 'viem'
+import { erc20Abi, type Address } from 'viem'
 import { ESCROW_ADDRESS, FLOWS_ADDRESS, InvoiceStatus, MilestoneState, escrowAbi, flowsAbi } from '@/lib/contracts'
-import { CHAIN_ID, USDC_ADDRESS } from '@/lib/trustora'
+import { CHAIN_ID, NETWORK_NAME, USDC_ADDRESS } from '@/lib/trustora'
 
 /** Most recent records read per wallet (keeps the number of RPC reads small and predictable). */
 const MAX_RECORDS = 40
@@ -123,7 +123,19 @@ export function useSplits(user?: Address) {
 }
 export type SplitRow = NonNullable<ReturnType<typeof useSplits>['data']>[number]
 
-/** Checks a configured contract: it must have code and point at the Circle USDC address this app uses. */
+export interface DeploymentCheck {
+  id: 'network' | 'code' | 'usdc' | 'token'
+  label: string
+  /** true passed, false failed, null could not be checked (an earlier check failed or the node did not answer). */
+  ok: boolean | null
+  detail: string
+}
+
+/**
+ * Validates a configured contract before its screen is enabled: the node is Arc Mainnet (chain 5042), the address has
+ * code, the contract was deployed with the Circle USDC address from the registry, and that token answers as USDC with
+ * 6 decimals. Every check reads real chain state.
+ */
 export function useDeployment(address: Address | undefined, abiKind: 'escrow' | 'flows') {
   const client = useChainClient()
   return useQuery({
@@ -131,15 +143,45 @@ export function useDeployment(address: Address | undefined, abiKind: 'escrow' | 
     enabled: Boolean(address && client),
     staleTime: 5 * 60_000,
     retry: 1,
-    queryFn: async (): Promise<'ready' | 'no-code' | 'wrong-usdc'> => {
-      if (!client || !address) return 'no-code'
-      const code = await client.getCode({ address })
-      if (!code || code === '0x') return 'no-code'
-      const usdc =
-        abiKind === 'escrow'
-          ? await client.readContract({ address, abi: escrowAbi, functionName: 'usdc' })
-          : await client.readContract({ address, abi: flowsAbi, functionName: 'usdc' })
-      return usdc.toLowerCase() === USDC_ADDRESS.toLowerCase() ? 'ready' : 'wrong-usdc'
+    queryFn: async (): Promise<{ ready: boolean; checks: DeploymentCheck[] }> => {
+      if (!client || !address) return { ready: false, checks: [] }
+      const checks: DeploymentCheck[] = []
+      const run = async (id: DeploymentCheck['id'], label: string, fn: () => Promise<{ ok: boolean; detail: string }>) => {
+        const blocked = checks.some((c) => c.ok !== true)
+        if (blocked) {
+          checks.push({ id, label, ok: null, detail: 'Not checked because an earlier check did not pass.' })
+          return
+        }
+        try {
+          const r = await fn()
+          checks.push({ id, label, ...r })
+        } catch {
+          checks.push({ id, label, ok: null, detail: 'Could not be read from the network right now.' })
+        }
+      }
+      await run('network', `Network is ${NETWORK_NAME} (chain ${CHAIN_ID})`, async () => {
+        const id = await client.getChainId()
+        return { ok: id === CHAIN_ID, detail: id === CHAIN_ID ? `The node reports chain ${id}.` : `The node reports chain ${id}, not ${CHAIN_ID}.` }
+      })
+      await run('code', 'Contract code exists at the address', async () => {
+        const code = await client.getCode({ address })
+        const ok = Boolean(code && code !== '0x')
+        return { ok, detail: ok ? 'Contract code found.' : 'There is no contract at this address on Arc Mainnet.' }
+      })
+      await run('usdc', 'Contract uses the Circle USDC address', async () => {
+        const configured = abiKind === 'escrow' ? await client.readContract({ address, abi: escrowAbi, functionName: 'usdc' }) : await client.readContract({ address, abi: flowsAbi, functionName: 'usdc' })
+        const ok = configured.toLowerCase() === USDC_ADDRESS.toLowerCase()
+        return { ok, detail: ok ? `usdc() is ${USDC_ADDRESS}.` : `usdc() is ${configured}, but Circle's Arc USDC is ${USDC_ADDRESS}. Deploy a new contract with the right address.` }
+      })
+      await run('token', 'That token answers as USDC with 6 decimals', async () => {
+        const [symbol, decimals] = await Promise.all([
+          client.readContract({ address: USDC_ADDRESS, abi: erc20Abi, functionName: 'symbol' }),
+          client.readContract({ address: USDC_ADDRESS, abi: erc20Abi, functionName: 'decimals' }),
+        ])
+        const ok = symbol === 'USDC' && decimals === 6
+        return { ok, detail: ok ? 'symbol USDC, 6 decimals.' : `The token reports ${symbol} with ${decimals} decimals.` }
+      })
+      return { ready: checks.length === 4 && checks.every((c) => c.ok === true), checks }
     },
   })
 }

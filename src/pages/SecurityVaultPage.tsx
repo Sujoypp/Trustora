@@ -52,7 +52,7 @@ export function SecurityVaultPage() {
               <p className="flex flex-wrap items-baseline gap-x-2">
                 <span className="display text-4xl font-bold tabular-nums">{trust.result.score}</span>
                 <span style={{ color: 'var(--muted)' }}>/ 100</span>
-                <span className="font-semibold" style={{ color: trust.result.score >= 70 ? 'var(--emerald)' : '#a5b4fc' }}>
+                <span className="font-semibold" style={{ color: trust.result.score >= 70 ? 'var(--emerald)' : '#a9c6ff' }}>
                   {trust.result.tier}
                 </span>
               </p>
@@ -66,7 +66,7 @@ export function SecurityVaultPage() {
                       </span>
                     </div>
                     <div className="mt-1.5 h-1.5 overflow-hidden rounded-full" style={{ background: 'rgba(255,255,255,0.08)' }}>
-                      <div className="h-full rounded-full" style={{ width: `${(f.points / f.max) * 100}%`, background: 'linear-gradient(to right, #6366f1, #22d3ee)' }} />
+                      <div className="h-full rounded-full" style={{ width: `${(f.points / f.max) * 100}%`, background: 'linear-gradient(to right, #4f8cff, #22d3ee)' }} />
                     </div>
                     <p className="mt-1 text-xs" style={{ color: 'var(--muted)' }}>
                       {f.detail}
@@ -137,7 +137,7 @@ export function SecurityVaultPage() {
               target="_blank"
               rel="noopener noreferrer"
               className="mt-3 inline-flex items-center gap-1.5 text-xs underline underline-offset-2"
-              style={{ color: '#a5b4fc' }}
+              style={{ color: '#a9c6ff' }}
             >
               View the contract on the explorer
               <ExternalLink className="size-3" aria-hidden="true" />

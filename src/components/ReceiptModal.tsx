@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Check, Copy, Download, ExternalLink } from 'lucide-react'
+import { SuccessMark } from '@/components/states'
 import { BackButton } from '@/components/PageHeader'
 import { TxLink } from '@/components/TxLink'
 import { toast } from 'sonner'
@@ -80,12 +81,7 @@ export function ReceiptModal({ receipt, onClose }: Props) {
 
         <div className="px-5 pb-5 pt-5">
           <div className="flex flex-col items-center text-center">
-            <span
-              className="flex size-12 items-center justify-center rounded-full"
-              style={{ background: 'rgba(16,185,129,0.14)', color: 'var(--emerald)' }}
-            >
-              <Check className="size-6" strokeWidth={2.4} aria-hidden="true" />
-            </span>
+            <SuccessMark className="size-16" />
             <h2 id="receipt-title" className="mt-3 text-base font-semibold">
               Payment confirmed
             </h2>

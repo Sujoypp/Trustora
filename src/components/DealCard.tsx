@@ -19,7 +19,7 @@ interface Props {
 }
 
 const STATE_LABEL: Record<number, { text: string; color: string }> = {
-  [MilestoneState.Funded]: { text: 'Funded', color: '#a5b4fc' },
+  [MilestoneState.Funded]: { text: 'Funded', color: '#a9c6ff' },
   [MilestoneState.Delivered]: { text: 'Delivered', color: 'var(--cyan)' },
   [MilestoneState.Disputed]: { text: 'In dispute', color: 'var(--amber)' },
   [MilestoneState.Released]: { text: 'Paid to payee', color: 'var(--emerald)' },
@@ -52,7 +52,7 @@ function Party({ label, address, me }: { label: string; address: string; me: Add
         {shortAddress(address)}
       </a>
       {same(address, me) && (
-        <span className="ml-1.5 rounded px-1.5 py-0.5 text-[10px] font-semibold" style={{ background: 'rgba(99,102,241,0.2)', color: '#c7d2fe' }}>
+        <span className="ml-1.5 rounded px-1.5 py-0.5 text-[10px] font-semibold" style={{ background: 'rgba(79,140,255,0.2)', color: '#cfe0ff' }}>
           You
         </span>
       )}
@@ -112,7 +112,7 @@ export function DealCard({ deal, me, now, busy, act }: Props) {
           {a.acceptBy !== 0n && <p>Accept by: {fullDate(Number(a.acceptBy))}</p>}
           {a.autoReleaseAfter !== 0n && <p>Auto-release after delivery: {Number(a.autoReleaseAfter) / 86_400} days without a dispute</p>}
           {ESCROW_ADDRESS && (
-            <a href={buildAddressExplorerUrl(CHAIN_ID, ESCROW_ADDRESS)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 underline" style={{ color: '#a5b4fc' }}>
+            <a href={buildAddressExplorerUrl(CHAIN_ID, ESCROW_ADDRESS)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 underline" style={{ color: '#a9c6ff' }}>
               Escrow contract <ExternalLink className="size-3" aria-hidden="true" />
             </a>
           )}

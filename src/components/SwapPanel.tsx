@@ -206,7 +206,7 @@ export function SwapPanel() {
             onClick={() => setSlippage(s.bps)}
             aria-pressed={slippage === s.bps}
             className="rounded-full border px-3 py-1 text-xs font-medium transition-colors duration-150"
-            style={{ borderColor: slippage === s.bps ? 'rgba(99,102,241,0.6)' : 'var(--border)', background: slippage === s.bps ? 'rgba(99,102,241,0.18)' : 'transparent', color: slippage === s.bps ? '#fff' : 'var(--muted)' }}
+            style={{ borderColor: slippage === s.bps ? 'rgba(79,140,255,0.6)' : 'var(--border)', background: slippage === s.bps ? 'rgba(79,140,255,0.18)' : 'transparent', color: slippage === s.bps ? '#fff' : 'var(--muted)' }}
           >
             {s.label}
           </button>

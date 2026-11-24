@@ -54,6 +54,15 @@ The Escrow screen stays off until `VITE_TRUSTORA_ESCROW_ADDRESS_MAINNET` points 
 
 `bun run deploy:flows` deploys the invoice, split and recurring contract the same way.
 
+## Insights and records
+
+- Advanced Analytics, Transaction Intelligence and Wallet Trust Profiles read your confirmed payments and onchain records. They need no extra contract.
+- The notification bell lists payments you received and actions waiting on you. Optional desktop alerts work only while TRUSTORA is open in a tab; true background push needs a server and is not included.
+- Receipts download as a PDF with the transaction hash, a QR code and a link that opens the proof page, which re-reads the payment from the chain.
+- Transaction history loads from `public/router-index.json` (every payment the router has emitted, built by `bun run index:router`) and then reads only the blocks since, one paced request at a time. Arc Mainnet's public RPC rejects log ranges above 10,000 blocks and allows about 3 requests per second, so this keeps first loads fast. Run `bun run index:router` before each deploy to keep the tail short.
+- `bun run test:chain` runs read-only checks against the real Arc Mainnet: chain id, Circle USDC, Multicall3, the payment router, the history scan and the index file.
+- `bun run test:logic` checks the analytics, intelligence, notification and PDF logic.
+
 ## Development
 
 Prerequisites: [Bun](https://bun.sh) and [Foundry](https://getfoundry.sh).

@@ -1,5 +1,6 @@
 import { Logo } from '@/components/Logo'
 import { NetworkPill } from '@/components/NetworkPill'
+import { NotificationBell } from '@/components/NotificationBell'
 import { WalletMenu } from '@/components/WalletMenu'
 
 /** Top bar: brand on the left, live network status and the wallet menu on the right. */
@@ -12,6 +13,7 @@ export function Header() {
       <Logo />
       <div className="flex shrink-0 items-center gap-2 sm:gap-3">
         <NetworkPill />
+        <NotificationBell />
         <WalletMenu />
       </div>
     </header>

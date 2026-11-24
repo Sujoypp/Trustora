@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
-import { Check, Copy, Download, ExternalLink } from 'lucide-react'
+import { Check, Copy, Download, ExternalLink, FileDown } from 'lucide-react'
 import { SuccessMark } from '@/components/states'
 import { BackButton } from '@/components/PageHeader'
 import { TxLink } from '@/components/TxLink'
 import { toast } from 'sonner'
+import { useShareBase } from '@/hooks/useShareBase'
+import { downloadBlob } from '@/lib/download'
+import { buildReceiptPdf, qrMatrix } from '@/lib/receiptPdf'
 import { buildTxExplorerUrl } from '@/onchain-facts'
 import { CHAIN_ID, type ReceiptData, NETWORK_NAME } from '@/lib/trustora'
 import { formatUsdc, fullDate, shortAddress } from '@/lib/format'
@@ -16,6 +19,8 @@ interface Props {
 export function ReceiptModal({ receipt, onClose }: Props) {
   const closeRef = useRef<HTMLDivElement>(null)
   const [copied, setCopied] = useState(false)
+  const [pdfBusy, setPdfBusy] = useState(false)
+  const base = useShareBase()
 
   useEffect(() => {
     if (!receipt) return
@@ -34,6 +39,22 @@ export function ReceiptModal({ receipt, onClose }: Props) {
       setTimeout(() => setCopied(false), 1800)
     } catch {
       toast.error('Could not copy the hash.')
+    }
+  }
+
+  /** A PDF whose QR code and link open the proof page, which re-reads this payment straight from the chain. */
+  const downloadPdf = async () => {
+    if (!receipt || !base) return
+    setPdfBusy(true)
+    try {
+      const verifyUrl = `${base}/proof?tx=${receipt.txHash}`
+      const explorerUrl = buildTxExplorerUrl(CHAIN_ID, receipt.txHash)
+      const qr = await qrMatrix(verifyUrl)
+      downloadBlob(buildReceiptPdf(receipt, { network: NETWORK_NAME, chainId: CHAIN_ID, verifyUrl, explorerUrl, qr }), `trustora-receipt-${receipt.txHash.slice(2, 10)}.pdf`)
+    } catch {
+      toast.error('Could not create the PDF', { id: 'pdf-failed', description: 'Try again, or use the text receipt.' })
+    } finally {
+      setPdfBusy(false)
     }
   }
 
@@ -127,14 +148,26 @@ export function ReceiptModal({ receipt, onClose }: Props) {
             </div>
           </div>
 
-          <div className="mt-4 grid grid-cols-2 gap-2">
+          <div className="mt-4 grid grid-cols-3 gap-2">
             <button
+              type="button"
+              onClick={() => void downloadPdf()}
+              disabled={!base || pdfBusy}
+              className="ghost-btn flex min-h-10 items-center justify-center gap-1.5 border text-sm font-semibold"
+              style={{ borderColor: 'rgba(79,140,255,0.45)', color: '#cfe0ff' }}
+              title="A PDF with the transaction hash, a QR code and a link anyone can use to verify it"
+            >
+              <FileDown className="size-4" aria-hidden="true" />
+              {pdfBusy ? 'Making...' : 'PDF'}
+            </button>
+            <button
+              type="button"
               onClick={download}
-              className="ghost-btn flex min-h-10 items-center justify-center gap-2 border text-sm font-medium"
+              className="ghost-btn flex min-h-10 items-center justify-center gap-1.5 border text-sm font-medium"
               style={{ borderColor: 'var(--border)' }}
             >
               <Download className="size-4" aria-hidden="true" />
-              Download
+              Text
             </button>
             <a
               href={buildTxExplorerUrl(CHAIN_ID, receipt.txHash)}

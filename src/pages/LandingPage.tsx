@@ -1,5 +1,4 @@
 import { ArrowRight, BadgeCheck, CalendarClock, FileText, Handshake, Link2, Lock, Network, Repeat, ShieldCheck, Split, Wallet, Waypoints, type LucideIcon } from 'lucide-react'
-import { Background } from '@/components/Background'
 import { BrandMark, Logo } from '@/components/Logo'
 import { WalletMenu } from '@/components/WalletMenu'
 import { CHAIN, CHAIN_ID, NETWORK_NAME, ROUTER_ADDRESS } from '@/lib/trustora'
@@ -44,17 +43,17 @@ function HeroEmblem() {
       <div className="absolute inset-[8%] rounded-full" style={{ background: 'radial-gradient(circle, rgba(79,140,255,0.28), rgba(34,211,238,0.1) 55%, transparent 72%)' }} />
       <div className="absolute inset-[6%] rounded-full border" style={{ borderColor: 'rgba(130,170,255,0.18)' }} />
       <div className="absolute inset-[22%] rounded-full border border-dashed" style={{ borderColor: 'rgba(34,211,238,0.22)' }} />
-      <div className="orbit" style={{ animationDuration: '60s' }}>
+      <div>
         {ORBIT.map(({ icon: Icon, angle }) => (
           <div key={angle} className="absolute left-1/2 top-1/2 size-0" style={{ transform: `rotate(${angle}deg) translateY(-min(38vw, 176px)) rotate(${-angle}deg)` }}>
-            <span className="counter-spin glass flex size-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-xl sm:size-12" style={{ ['--dur' as string]: '60s', color: '#9fc2ff' }}>
+            <span className="glass flex size-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-xl sm:size-12" style={{ color: '#9fc2ff' }}>
               <Icon className="size-5" />
             </span>
           </div>
         ))}
       </div>
-      <div className="float-slow absolute inset-[30%] flex items-center justify-center">
-        <BrandMark className="size-full" reveal />
+      <div className="absolute inset-[30%] flex items-center justify-center">
+        <BrandMark className="size-full" />
       </div>
     </div>
   )
@@ -66,7 +65,6 @@ export function LandingPage({ onEnter }: { onEnter: () => void }) {
 
   return (
     <div className="min-h-dvh">
-      <Background />
       <div className="relative z-10">
         <header className="blur-surface sticky top-0 z-50 border-b" style={{ background: 'rgba(5, 10, 24, 0.78)', borderColor: 'var(--border)' }}>
           <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">

@@ -1,4 +1,4 @@
-export type NavId = 'dashboard' | 'send' | 'receive' | 'swap' | 'bridge' | 'escrow' | 'invoices' | 'links' | 'split' | 'recurring' | 'proof' | 'contract' | 'history' | 'vault' | 'settings'
+export type NavId = 'dashboard' | 'send' | 'receive' | 'swap' | 'bridge' | 'escrow' | 'invoices' | 'links' | 'split' | 'recurring' | 'proof' | 'analytics' | 'insights' | 'profile' | 'contract' | 'history' | 'vault' | 'settings'
 
 export interface Crumb {
   label: string
@@ -86,6 +86,27 @@ export const ROUTES: RouteDef[] = [
     title: 'Onchain Proof',
     subtitle: 'Verify transactions and records straight from Arc Mainnet.',
     crumbs: [DASH, { label: 'Onchain Proof' }],
+  },
+  {
+    path: '/analytics',
+    nav: 'analytics',
+    title: 'Advanced Analytics',
+    subtitle: 'Cash flow, counterparties and habits computed from your confirmed payments.',
+    crumbs: [DASH, { label: 'Advanced Analytics' }],
+  },
+  {
+    path: '/insights',
+    nav: 'insights',
+    title: 'Transaction Intelligence',
+    subtitle: 'Rule-based findings about your payments: new recipients, duplicates, patterns and spending by tag.',
+    crumbs: [DASH, { label: 'Transaction Intelligence' }],
+  },
+  {
+    path: '/profile',
+    nav: 'profile',
+    title: 'Wallet Trust Profile',
+    subtitle: 'A wallet reputation built from verifiable onchain activity. Look up any wallet and share the link.',
+    crumbs: [DASH, { label: 'Wallet Trust Profile' }],
   },
   {
     path: '/contract',

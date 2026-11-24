@@ -12,6 +12,7 @@ import { useApp } from '@/lib/appContext'
 import { ESCROW_ADDRESS, FLOWS_ADDRESS, escrowAbi, flowsAbi } from '@/lib/contracts'
 import { formatUsdc, fullDate, shortAddress } from '@/lib/format'
 import { CHAIN, CHAIN_ID, NETWORK_NAME, ROUTER_ADDRESS, trustoraAbi } from '@/lib/trustora'
+import { useRoute } from '@/lib/router'
 import { buildTxExplorerUrl } from '@/onchain-facts'
 
 const inputClass = 'glass-inner w-full bg-transparent px-3 py-2.5 text-sm outline-none placeholder:text-[#64748B]'
@@ -143,8 +144,12 @@ export function ProofPage() {
   const invoices = useInvoices(app.address).data ?? []
   const schedules = useSchedules(app.address).data ?? []
   const splits = useSplits(app.address).data ?? []
-  const [input, setInput] = useState('')
-  const [hash, setHash] = useState<Hex | null>(null)
+  const route = useRoute()
+  // A receipt link or QR code opens this page with ?tx=<hash> and verifies it straight away.
+  const linked = new URLSearchParams(route.search).get('tx')
+  const linkedHash = linked && isHex(linked) && linked.length === 66 ? (linked) : null
+  const [input, setInput] = useState(linkedHash ?? '')
+  const [hash, setHash] = useState<Hex | null>(linkedHash)
   const payments = app.history.payments.slice(0, 15)
 
   const verify = (value: string) => {

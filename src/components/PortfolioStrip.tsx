@@ -2,7 +2,6 @@ import { memo, useEffect, useState } from 'react'
 import { ConnectKitButton } from 'connectkit'
 import { Network, QrCode, Repeat, Send, TrendingDown, TrendingUp } from 'lucide-react'
 import { UsdcVerifiedBadge } from '@/components/UsdcVerifiedBadge'
-import { useCountUp } from '@/hooks/useCountUp'
 import { CURRENCIES, symbolOf, toFiat, useCurrency, useFxRates } from '@/lib/fiat'
 import { formatUsdc } from '@/lib/format'
 import { MASK } from '@/lib/prefs'
@@ -38,7 +37,7 @@ export const PortfolioStrip = memo(function PortfolioStrip({ connected, balanceR
 
   const ready = connected && balanceRaw !== undefined
   // Counts up or down when the balance changes (a deposit or a payment).
-  const animated = useCountUp(balanceRaw ?? 0n)
+  const animated = balanceRaw ?? 0n
   const [chosen, setCurrency] = useCurrency()
   const fx = useFxRates()
   // Show USD until a rate is loaded; never guess one.

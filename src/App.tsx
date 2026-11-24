@@ -2,7 +2,6 @@ import { Suspense, lazy, useCallback, useEffect, useMemo, useState, type ReactEl
 import { useAccount, useGasPrice } from 'wagmi'
 import type { Hex } from 'viem'
 import { toast } from 'sonner'
-import { Background } from '@/components/Background'
 import { AppFooter } from '@/components/AppFooter'
 import { ConnectionStatus } from '@/components/ConnectionStatus'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
@@ -14,11 +13,15 @@ import { DashboardPage } from '@/pages/DashboardPage'
 import { LandingPage } from '@/pages/LandingPage'
 import { useUsdcBalance } from '@/hooks/useUsdcBalance'
 import { usePaymentHistory } from '@/hooks/usePaymentHistory'
+import { usePendingTracker } from '@/hooks/usePendingTracker'
 import { AppContext, type AppData } from '@/lib/appContext'
 import { parsePaymentRequest } from '@/lib/paymentLink'
 import { usePrefs } from '@/lib/prefs'
 import {
+  loadAnalytics,
   loadBridge,
+  loadInsights,
+  loadProfile,
   loadEscrow,
   loadInvoices,
   loadLinks,
@@ -48,6 +51,9 @@ const LinksPage = lazy(loadLinks)
 const SplitPage = lazy(loadSplit)
 const RecurringPage = lazy(loadRecurring)
 const ProofPage = lazy(loadProof)
+const AnalyticsPage = lazy(loadAnalytics)
+const InsightsPage = lazy(loadInsights)
+const ProfilePage = lazy(loadProfile)
 const HistoryPage = lazy(loadHistory)
 const SettingsPage = lazy(loadSettings)
 const SecurityVaultPage = lazy(loadVault)
@@ -73,6 +79,9 @@ const PAGES: Record<string, () => ReactElement> = {
   '/split': () => <SplitPage />,
   '/recurring': () => <RecurringPage />,
   '/proof': () => <ProofPage />,
+  '/analytics': () => <AnalyticsPage />,
+  '/insights': () => <InsightsPage />,
+  '/profile': () => <ProfilePage />,
   '/contract': () => <ContractPage />,
   '/vault': () => <SecurityVaultPage />,
   '/history': () => <HistoryPage />,
@@ -84,8 +93,7 @@ export default function App() {
   const { balance, isLoading: balanceLoading, refetch } = useUsdcBalance(address)
   const history = usePaymentHistory(address)
   const [prefs, setPrefs] = usePrefs()
-  const { data: gasPrice } = useGasPrice({ chainId: CHAIN_ID, query: { refetchInterval: 15_000 } })
-  const [pending, setPending] = useState<Payment[]>([])
+  const { data: gasPrice } = useGasPrice({ chainId: CHAIN_ID, query: { refetchInterval: 30_000 } })
   const [receipt, setReceipt] = useState<ReceiptData | null>(null)
   const route = useRoute()
   const def = matchRoute(route.path)
@@ -119,12 +127,12 @@ export default function App() {
     }
   }, [])
 
-  const onPending = useCallback((payment: Payment) => setPending((list) => [payment, ...list]), [])
-  const onSettled = useCallback((txHash: Hex) => {
-    // Keep the row until the confirmed log replaces it; the feed hides a pending row once its hash is confirmed.
-    setTimeout(() => setPending((list) => list.filter((p) => p.txHash !== txHash)), 15_000)
-  }, [])
   const { refresh } = history
+  const onTracked = useCallback(() => {
+    void refetch()
+    void refresh()
+  }, [refetch, refresh])
+  const { pending, onPending, onSettled } = usePendingTracker(address, onTracked)
   const onSuccess = useCallback(
     (data: ReceiptData) => {
       setReceipt(data)
@@ -193,8 +201,7 @@ export default function App() {
         <LandingPage onEnter={enter} />
       ) : (
       <div className="min-h-dvh">
-        <Background />
-        <div className="relative z-10">
+          <div className="relative z-10">
         <Header />
         <Sidebar />
 

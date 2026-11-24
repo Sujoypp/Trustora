@@ -13,6 +13,9 @@ export const loadLinks: Loader = () => import('@/pages/LinksPage').then((m) => (
 export const loadSplit: Loader = () => import('@/pages/SplitPage').then((m) => ({ default: m.SplitPage }))
 export const loadRecurring: Loader = () => import('@/pages/RecurringPage').then((m) => ({ default: m.RecurringPage }))
 export const loadProof: Loader = () => import('@/pages/ProofPage').then((m) => ({ default: m.ProofPage }))
+export const loadAnalytics: Loader = () => import('@/pages/AnalyticsPage').then((m) => ({ default: m.AnalyticsPage }))
+export const loadInsights: Loader = () => import('@/pages/InsightsPage').then((m) => ({ default: m.InsightsPage }))
+export const loadProfile: Loader = () => import('@/pages/ProfilePage').then((m) => ({ default: m.ProfilePage }))
 export const loadContract: Loader = () => import('@/pages/ContractPage').then((m) => ({ default: m.ContractPage }))
 export const loadHistory: Loader = () => import('@/pages/HistoryPage').then((m) => ({ default: m.HistoryPage }))
 export const loadVault: Loader = () => import('@/pages/SecurityVaultPage').then((m) => ({ default: m.SecurityVaultPage }))
@@ -29,6 +32,9 @@ const ROUTE_LOADERS: Record<string, Loader> = {
   '/split': loadSplit,
   '/recurring': loadRecurring,
   '/proof': loadProof,
+  '/analytics': loadAnalytics,
+  '/insights': loadInsights,
+  '/profile': loadProfile,
   '/contract': loadContract,
   '/history': loadHistory,
   '/vault': loadVault,

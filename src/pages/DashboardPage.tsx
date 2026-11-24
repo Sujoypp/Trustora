@@ -1,4 +1,4 @@
-import { ArrowDownLeft, ArrowUpRight, BadgeCheck, BadgeCheck as ProofIcon, CalendarClock, ExternalLink, FileText, Handshake, Link2, Network, QrCode, Split } from 'lucide-react'
+import { ArrowDownLeft, ArrowUpRight, BadgeCheck, BarChart3, Lightbulb, UserRound, BadgeCheck as ProofIcon, CalendarClock, ExternalLink, FileText, Handshake, Link2, Network, QrCode, Split } from 'lucide-react'
 import { AddressBadge } from '@/components/AddressBadge'
 import { StatusPill } from '@/components/ActivityFeed'
 import { AnalyticsPanel } from '@/components/AnalyticsPanel'
@@ -38,6 +38,9 @@ const TOOLS = [
   { to: '/links', title: 'Payment Links', description: 'Shareable USDC payment links and QR codes.', icon: Link2, contract: undefined },
   { to: '/split', title: 'Split Payments', description: 'Send one payment to several wallets in a single transaction.', icon: Split, contract: Boolean(FLOWS_ADDRESS) },
   { to: '/recurring', title: 'Recurring Payments', description: 'Schedule authorized recurring USDC payments.', icon: CalendarClock, contract: Boolean(FLOWS_ADDRESS) },
+  { to: '/analytics', title: 'Advanced Analytics', description: 'Cash flow, counterparties and habits from your confirmed payments.', icon: BarChart3, contract: undefined },
+  { to: '/insights', title: 'Transaction Intelligence', description: 'Spot new recipients, duplicates and payments that should be automated.', icon: Lightbulb, contract: undefined },
+  { to: '/profile', title: 'Wallet Trust Profile', description: 'A verifiable wallet reputation you can look up and share.', icon: UserRound, contract: undefined },
   { to: '/proof', title: 'Onchain Proof', description: 'Verify transactions and records straight from Arc Mainnet.', icon: ProofIcon, contract: undefined },
 ] as const
 

@@ -8,6 +8,8 @@ import { CHAIN_ID, NETWORK_NAME, USDC_ADDRESS } from '@/lib/trustora'
 /** Most recent records read per wallet (keeps the number of RPC reads small and predictable). */
 const MAX_RECORDS = 40
 const REFRESH_MS = 20_000
+/** Multicall3 is deployed at its canonical address on Arc Mainnet: one request replaces a read per record. */
+const MULTICALL3: Address = '0xcA11bde05977b3631167028862bE2a173976CA11'
 
 function useChainClient() {
   return usePublicClient({ chainId: CHAIN_ID })
@@ -24,18 +26,26 @@ export function useEscrowDeals(user?: Address) {
       const contract = ESCROW_ADDRESS
       if (!client || !user || !contract) return []
       const ids = await client.readContract({ address: contract, abi: escrowAbi, functionName: 'idsOf', args: [user] })
-      return Promise.all(
-        [...ids]
-          .reverse()
-          .slice(0, MAX_RECORDS)
-          .map(async (id) => {
+      const picked = [...ids].reverse().slice(0, MAX_RECORDS)
+      if (picked.length === 0) return []
+      try {
+        const [agreements, milestones] = await Promise.all([
+          client.multicall({ contracts: picked.map((id) => ({ address: contract, abi: escrowAbi, functionName: 'getAgreement', args: [id] }) as const), allowFailure: false, multicallAddress: MULTICALL3 }),
+          client.multicall({ contracts: picked.map((id) => ({ address: contract, abi: escrowAbi, functionName: 'getMilestones', args: [id] }) as const), allowFailure: false, multicallAddress: MULTICALL3 }),
+        ])
+        return picked.map((id, i) => ({ id, agreement: agreements[i], milestones: milestones[i] }))
+      } catch {
+        // Multicall unavailable: fall back to one read per record.
+        return Promise.all(
+          picked.map(async (id) => {
             const [agreement, milestones] = await Promise.all([
               client.readContract({ address: contract, abi: escrowAbi, functionName: 'getAgreement', args: [id] }),
               client.readContract({ address: contract, abi: escrowAbi, functionName: 'getMilestones', args: [id] }),
             ])
             return { id, agreement, milestones }
           }),
-      )
+        )
+      }
     },
   })
 }
@@ -52,12 +62,14 @@ export function useInvoices(user?: Address) {
       const contract = FLOWS_ADDRESS
       if (!client || !user || !contract) return []
       const ids = await client.readContract({ address: contract, abi: flowsAbi, functionName: 'invoiceIdsOf', args: [user] })
-      return Promise.all(
-        [...ids]
-          .reverse()
-          .slice(0, MAX_RECORDS)
-          .map(async (id) => ({ id, invoice: await client.readContract({ address: contract, abi: flowsAbi, functionName: 'getInvoice', args: [id] }) })),
-      )
+      const picked = [...ids].reverse().slice(0, MAX_RECORDS)
+      if (picked.length === 0) return []
+      try {
+        const rows = await client.multicall({ contracts: picked.map((id) => ({ address: contract, abi: flowsAbi, functionName: 'getInvoice', args: [id] }) as const), allowFailure: false, multicallAddress: MULTICALL3 })
+        return picked.map((id, i) => ({ id, invoice: rows[i] }))
+      } catch {
+        return Promise.all(picked.map(async (id) => ({ id, invoice: await client.readContract({ address: contract, abi: flowsAbi, functionName: 'getInvoice', args: [id] }) })))
+      }
     },
   })
 }
@@ -90,12 +102,14 @@ export function useSchedules(user?: Address) {
       const contract = FLOWS_ADDRESS
       if (!client || !user || !contract) return []
       const ids = await client.readContract({ address: contract, abi: flowsAbi, functionName: 'scheduleIdsOf', args: [user] })
-      return Promise.all(
-        [...ids]
-          .reverse()
-          .slice(0, MAX_RECORDS)
-          .map(async (id) => ({ id, schedule: await client.readContract({ address: contract, abi: flowsAbi, functionName: 'getSchedule', args: [id] }) })),
-      )
+      const picked = [...ids].reverse().slice(0, MAX_RECORDS)
+      if (picked.length === 0) return []
+      try {
+        const rows = await client.multicall({ contracts: picked.map((id) => ({ address: contract, abi: flowsAbi, functionName: 'getSchedule', args: [id] }) as const), allowFailure: false, multicallAddress: MULTICALL3 })
+        return picked.map((id, i) => ({ id, schedule: rows[i] }))
+      } catch {
+        return Promise.all(picked.map(async (id) => ({ id, schedule: await client.readContract({ address: contract, abi: flowsAbi, functionName: 'getSchedule', args: [id] }) })))
+      }
     },
   })
 }
@@ -112,12 +126,14 @@ export function useSplits(user?: Address) {
       const contract = FLOWS_ADDRESS
       if (!client || !user || !contract) return []
       const ids = await client.readContract({ address: contract, abi: flowsAbi, functionName: 'splitIdsOf', args: [user] })
-      return Promise.all(
-        [...ids]
-          .reverse()
-          .slice(0, MAX_RECORDS)
-          .map(async (id) => ({ id, split: await client.readContract({ address: contract, abi: flowsAbi, functionName: 'getSplit', args: [id] }) })),
-      )
+      const picked = [...ids].reverse().slice(0, MAX_RECORDS)
+      if (picked.length === 0) return []
+      try {
+        const rows = await client.multicall({ contracts: picked.map((id) => ({ address: contract, abi: flowsAbi, functionName: 'getSplit', args: [id] }) as const), allowFailure: false, multicallAddress: MULTICALL3 })
+        return picked.map((id, i) => ({ id, split: rows[i] }))
+      } catch {
+        return Promise.all(picked.map(async (id) => ({ id, split: await client.readContract({ address: contract, abi: flowsAbi, functionName: 'getSplit', args: [id] }) })))
+      }
     },
   })
 }

@@ -15,7 +15,7 @@ export function useUsdcBalance(address?: Address) {
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
     chainId: CHAIN_ID,
-    query: { enabled: Boolean(address), refetchInterval: 6000 },
+    query: { enabled: Boolean(address), refetchInterval: 10_000 },
   })
 
   const balance = useMemo(

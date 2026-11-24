@@ -29,7 +29,7 @@ export const config = createConfig({
   connectors: [injected()],
   transports: {
     // Retries a few times with a short back-off before the app reports the node as down.
-    [arcMainnet.id]: http(mainnetFacts.rpcUrls[0], { retryCount: 3, retryDelay: 400, timeout: 12_000 }),
+    [arcMainnet.id]: http(mainnetFacts.rpcUrls[0], { retryCount: 2, retryDelay: 900, timeout: 12_000 }),
     [mainnet.id]: http(), // ENS resolution uses mainnet
   },
 })

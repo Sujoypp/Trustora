@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ArrowLeftRight, BadgeCheck, CalendarClock, FileCode2, FileText, Handshake, History, LayoutGrid, Link2, MoreHorizontal, Network, Repeat, Settings, ShieldCheck, Split, X, type LucideIcon } from 'lucide-react'
+import { ArrowLeftRight, BadgeCheck, BarChart3, Lightbulb, UserRound, CalendarClock, FileCode2, FileText, Handshake, History, LayoutGrid, Link2, MoreHorizontal, Network, Repeat, Settings, ShieldCheck, Split, X, type LucideIcon } from 'lucide-react'
 import { BrandMark } from '@/components/Logo'
 import { prefetchRoute } from '@/lib/prefetch'
 import { navigate, useRoute } from '@/lib/router'
@@ -36,6 +36,9 @@ const GROUPS: { title: string; items: Item[] }[] = [
     title: 'Records',
     items: [
       { id: 'history', label: 'Transaction History', to: '/history', icon: History },
+      { id: 'analytics', label: 'Advanced Analytics', to: '/analytics', icon: BarChart3 },
+      { id: 'insights', label: 'Transaction Intelligence', to: '/insights', icon: Lightbulb },
+      { id: 'profile', label: 'Wallet Trust Profile', to: '/profile', icon: UserRound },
       { id: 'proof', label: 'Onchain Proof', to: '/proof', icon: BadgeCheck },
       { id: 'contract', label: 'Smart Contract', to: '/contract', icon: FileCode2 },
       { id: 'vault', label: 'Trust Score & Status', to: '/vault', icon: ShieldCheck },
@@ -150,7 +153,7 @@ export function Sidebar() {
           <button type="button" className="blur-surface absolute inset-0 cursor-default" style={{ background: 'rgba(2, 5, 14, 0.7)' }} onClick={() => setMore(false)} aria-label="Close menu" tabIndex={-1} />
           <div className="sheet-in glass absolute inset-x-0 bottom-0 max-h-[82dvh] overflow-y-auto rounded-b-none p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]" style={{ borderRadius: '24px 24px 0 0' }}>
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="display flex items-center gap-2.5 text-lg font-semibold"><BrandMark className="size-8" animated={false} />All screens</h2>
+              <h2 className="display flex items-center gap-2.5 text-lg font-semibold"><BrandMark className="size-8" />All screens</h2>
               <button type="button" onClick={() => setMore(false)} aria-label="Close" className="ghost-btn flex size-10 items-center justify-center border">
                 <X className="size-5" aria-hidden="true" />
               </button>

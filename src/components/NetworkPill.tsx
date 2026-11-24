@@ -26,7 +26,7 @@ export function NetworkPill() {
 
   return (
     <span
-      className="flex min-h-10 items-center gap-2 rounded-full border px-3 text-xs font-medium"
+      className="hidden min-h-10 items-center gap-2 rounded-full border px-3 text-xs font-medium sm:flex"
       style={{ color: 'var(--ink-2)', borderColor: 'rgba(34,211,238,0.35)' }}
       title={title}
     >

@@ -1,23 +1,22 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { usePublicClient } from 'wagmi'
-import { getAbiItem, zeroAddress, type Address, type Hex } from 'viem'
+import { zeroAddress, type Address, type Hex } from 'viem'
 import { Amount, gasTokenToUsdc } from '@/onchain-money'
 import { requireChain } from '@/onchain-facts'
+import { scanPaymentLogs, type RawPaymentLog } from '@/lib/historyScan'
+import { loadStaticIndex } from '@/lib/staticIndex'
 import {
   CHAIN_ID,
   ROUTER_ADDRESS,
   ROUTER_DEPLOY_BLOCK,
   USDC_ADDRESS,
-  trustoraAbi,
   type Payment,
 } from '@/lib/trustora'
 
-const CHUNK = 5000n
 /** Used only when the deployment block is not configured: recent activity, never block 0. */
 const FALLBACK_LOOKBACK = 5000n
 const POLL_MS = 4000
 
-const paymentEvent = getAbiItem({ abi: trustoraAbi, name: 'PaymentSent' })
 
 interface StoredPayment extends Omit<Payment, 'blockNumber' | 'amountRaw'> {
   blockNumber: string
@@ -62,14 +61,7 @@ function sortPayments(list: Payment[]): Payment[] {
   )
 }
 
-interface RawLog {
-  args: { sender?: Address; recipient?: Address; token?: Address; amount?: bigint; note?: string; timestamp?: bigint }
-  transactionHash: Hex | null
-  blockNumber: bigint | null
-  logIndex: number | null
-}
-
-function toPayment(log: RawLog, me: string): Payment | null {
+function toPayment(log: RawPaymentLog, me: string): Payment | null {
   const { sender, recipient, token, amount, note, timestamp } = log.args
   if (!sender || !recipient || !token || amount === undefined || timestamp === undefined) return null
   if (!log.transactionHash || log.blockNumber === null || log.logIndex === null) return null
@@ -168,6 +160,19 @@ export function usePaymentHistory(account?: Address) {
         if (!ctx.loadedCache) loadCache()
         const head = await client.getBlockNumber()
         if (ctx.cursor === undefined) {
+          // First visit on this device: start from the prebuilt index instead of scanning the router's whole lifetime.
+          const seeded = await loadStaticIndex(router)
+          if (seeded && !ctx.cancelled) {
+            for (const log of seeded.logs) {
+              const payment = toPayment(log, me)
+              if (payment) ctx.byId.set(payment.id, payment)
+            }
+            ctx.cursor = seeded.scannedTo
+            patch({ payments: sortPayments([...ctx.byId.values()]) })
+            persist()
+          }
+        }
+        if (ctx.cursor === undefined) {
           const start = ROUTER_DEPLOY_BLOCK ?? (head > FALLBACK_LOOKBACK ? head - FALLBACK_LOOKBACK : 0n)
           ctx.cursor = start > 0n ? start - 1n : 0n
         }
@@ -176,32 +181,27 @@ export function usePaymentHistory(account?: Address) {
           return
         }
         // Only a real backlog shows a loading state; a quick catch-up poll stays silent.
-        const backlog = head - ctx.cursor > CHUNK / 4n
+        const backlog = head - ctx.cursor > 2_000n
         if (backlog) patch({ isLoading: true })
-        let from = ctx.cursor + 1n
-        while (from <= head && !ctx.cancelled) {
-          const to = from + CHUNK - 1n > head ? head : from + CHUNK - 1n
-          const [sent, received] = await Promise.all([
-            client.getLogs({ address: router, event: paymentEvent, args: { sender: account }, fromBlock: from, toBlock: to }),
-            client.getLogs({ address: router, event: paymentEvent, args: { recipient: account }, fromBlock: from, toBlock: to }),
-          ])
-          if (ctx.cancelled) return
-          let added = false
-          for (const log of [...sent, ...received]) {
-            const payment = toPayment(log, me)
-            if (payment && !ctx.byId.has(payment.id)) {
-              ctx.byId.set(payment.id, payment)
-              added = true
+        await scanPaymentLogs(client, router, account, ctx.cursor + 1n, head, {
+          cancelled: () => ctx.cancelled,
+          onBatch: (logs, scannedTo) => {
+            let added = false
+            for (const log of logs) {
+              const payment = toPayment(log, me)
+              if (payment && !ctx.byId.has(payment.id)) {
+                ctx.byId.set(payment.id, payment)
+                added = true
+              }
             }
-          }
-          ctx.cursor = to
-          from = to + 1n
-          const progress = head - to > 50n ? { scanned: to, head } : SYNCED
-          // A new array only when a payment was actually added, so memoized views downstream stay put.
-          if (added) patch({ payments: sortPayments([...ctx.byId.values()]), progress, error: null })
-          else patch({ progress, error: null })
-          if (added || backlog) persist()
-        }
+            ctx.cursor = scannedTo
+            const progress = head - scannedTo > 50n ? { scanned: scannedTo, head } : SYNCED
+            // A new array only when a payment was actually added, so memoized views downstream stay put.
+            if (added) patch({ payments: sortPayments([...ctx.byId.values()]), progress, error: null })
+            else patch({ progress, error: null })
+            if (added || backlog) persist()
+          },
+        })
       } catch {
         if (!ctx.cancelled) patch({ error: 'Could not reach the network to load activity. Retrying...' })
       } finally {
@@ -212,10 +212,18 @@ export function usePaymentHistory(account?: Address) {
 
     scanRef.current = scan
     void scan()
-    const timer = setInterval(() => void scan(), POLL_MS)
+    // Poll only while the tab is visible, and catch up the moment it comes back.
+    const timer = setInterval(() => {
+      if (document.visibilityState === 'visible') void scan()
+    }, POLL_MS)
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') void scan()
+    }
+    document.addEventListener('visibilitychange', onVisible)
     return () => {
       ctx.cancelled = true
       clearInterval(timer)
+      document.removeEventListener('visibilitychange', onVisible)
     }
   }, [client, account, key])
 

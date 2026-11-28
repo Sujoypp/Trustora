@@ -14,11 +14,13 @@ const NODES = [
   { id: 'G', x: 32, y: 47, r: 2.4 },
 ] as const
 
+const RING = 'M32 1.6a30.4 30.4 0 1 1 0 60.8 30.4 30.4 0 1 1 0-60.8Z'
+
 /**
  * The TRUSTORA mark: a metallic shield with depth, an interconnected node network, and a subtle "T" formed by the
  * brightest links. Silver metal, electric cyan and blue light. Static SVG: no animation.
  */
-export function BrandMark({ className = 'size-11' }: { className?: string }) {
+export function BrandMark({ className = 'size-11', ring = false }: { className?: string; ring?: boolean }) {
   const uid = useId().replace(/:/g, '')
   const url = (name: string) => `url(#${uid}-${name})`
   return (
@@ -47,6 +49,14 @@ export function BrandMark({ className = 'size-11' }: { className?: string }) {
           <stop offset="1" stopColor="#22d3ee" />
         </radialGradient>
       </defs>
+
+      {ring && (
+        <g className="logo-ring" style={{ transformOrigin: '32px 32px' }}>
+          <circle cx="32" cy="32" r="30.4" stroke="#6366f1" strokeOpacity="0.14" strokeWidth="1.2" />
+          <path d={RING} pathLength="1" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeDasharray="0.3 0.7" />
+          <path d={RING} pathLength="1" stroke="#22d3ee" strokeWidth="2" strokeLinecap="round" strokeDasharray="0.3 0.7" strokeDashoffset="-0.5" />
+        </g>
+      )}
 
       {/* Shield: navy body, a lit left facet, a metallic edge and an inner bevel for depth */}
       <path d={SHIELD} fill={url('body')} />
@@ -80,7 +90,7 @@ export function Logo({ size = 'sm', interactive = true }: Props) {
   const lg = size === 'lg'
   const content = (
     <>
-      <BrandMark className={lg ? 'size-14' : 'size-11'} />
+      <BrandMark className={lg ? 'size-14' : 'size-11'} ring />
       <span className="flex min-w-0 items-center">
         <span className={`brand-title shrink-0 whitespace-nowrap font-extrabold tracking-[0.12em] sm:tracking-[0.16em] ${lg ? 'text-2xl' : 'text-lg'}`} style={{ fontFamily: "'Space Grotesk', 'DM Sans', sans-serif" }}>
           TRUSTORA

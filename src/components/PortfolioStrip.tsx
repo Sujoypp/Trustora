@@ -1,6 +1,6 @@
 import { memo, useEffect, useState } from 'react'
 import { ConnectKitButton } from 'connectkit'
-import { Network, QrCode, Repeat, Send, TrendingDown, TrendingUp } from 'lucide-react'
+import { Link2, QrCode, Send, TrendingDown, TrendingUp } from 'lucide-react'
 import { UsdcVerifiedBadge } from '@/components/UsdcVerifiedBadge'
 import { CURRENCIES, symbolOf, toFiat, useCurrency, useFxRates } from '@/lib/fiat'
 import { formatUsdc } from '@/lib/format'
@@ -50,7 +50,7 @@ export const PortfolioStrip = memo(function PortfolioStrip({ connected, balanceR
   const up = net >= 0n
 
   return (
-    <section className="glass gradient-border relative flex flex-col gap-6 overflow-hidden p-5 sm:p-8 lg:flex-row lg:items-end lg:justify-between" aria-label="Total balance">
+    <section className="glass gradient-border relative flex flex-col gap-6 overflow-hidden p-5 sm:p-6 lg:flex-row lg:items-end lg:justify-between" aria-label="Total balance">
       <svg className="pointer-events-none absolute -right-16 -top-24 size-80 opacity-60" viewBox="0 0 320 320" fill="none" aria-hidden="true">
         <defs>
           <linearGradient id="strip-arc" x1="0" y1="0" x2="320" y2="320" gradientUnits="userSpaceOnUse">
@@ -144,12 +144,11 @@ export const PortfolioStrip = memo(function PortfolioStrip({ connected, balanceR
       <div className="relative flex flex-wrap items-center gap-2 lg:max-w-[24rem] lg:justify-end">
         <button type="button" onClick={() => navigate('/send')} onPointerEnter={() => prefetchRoute('/send')} className="cta flex min-h-12 items-center justify-center gap-2 px-6 text-base">
           <Send className="size-4" aria-hidden="true" />
-          Quick Send
+          Send
         </button>
         {[
           { label: 'Receive', to: '/receive', icon: QrCode },
-          { label: 'Swap', to: '/swap', icon: Repeat },
-          { label: 'Bridge', to: '/bridge', icon: Network },
+          { label: 'Payment Link', to: '/links', icon: Link2 },
         ].map(({ label, to, icon: Icon }) => (
           <button key={to} type="button" onClick={() => navigate(to)} onPointerEnter={() => prefetchRoute(to)} className="ghost-btn flex min-h-12 items-center justify-center gap-2 border px-4 text-sm font-semibold">
             <Icon className="size-4" aria-hidden="true" />

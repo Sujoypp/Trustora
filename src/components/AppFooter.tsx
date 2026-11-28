@@ -48,10 +48,8 @@ export function AppFooter() {
 
         <p className="flex items-center gap-2">
           <span className="live-dot size-2 shrink-0 rounded-full" style={{ background: 'var(--emerald)' }} aria-hidden="true" />
-          {NETWORK_NAME} • 100% Non-Custodial
+          100% Non-Custodial • {NETWORK_NAME} • Circle USDC
         </p>
-
-        <p>Built for Arc &amp; Circle USDC</p>
       </div>
 
       <p className="mt-3 max-w-3xl text-pretty text-[11px]" style={{ color: 'var(--subtle)' }}>

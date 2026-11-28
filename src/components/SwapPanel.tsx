@@ -12,7 +12,7 @@ import { useApp } from '@/lib/appContext'
 import { notifyError, type ErrorInfo } from '@/lib/errors'
 import { formatDecimalString } from '@/lib/tokenFormat'
 import { CHAIN_ID, NETWORK_NAME } from '@/lib/trustora'
-import { formatGwei, type Hex } from 'viem'
+import { formatGwei, formatUnits, type Hex } from 'viem'
 
 const TOKENS = [
   { id: 'USDC', label: 'USDC' },
@@ -48,8 +48,20 @@ export function SwapPanel() {
   const [quote, setQuote] = useState<Quote | null>(null)
   const [busy, setBusy] = useState(false)
   const [failure, setFailure] = useState<ErrorInfo | null>(null)
-  const { gasPrice } = useApp()
+  const { gasPrice, balance } = useApp()
   const [done, setDone] = useState<{ hash?: Hex; out?: string; token: TokenId } | null>(null)
+
+  // Quick amounts. MAX is only offered for USDC, whose balance the app already knows; it keeps 0.05 USDC back for network fees.
+  const presets = from === 'CIRBTC' ? ['0.001', '0.01', '0.1'] : from === 'USDC' ? ['10', '50', '100', 'MAX'] : ['10', '50', '100']
+  const FEE_RESERVE = 50_000n
+  const maxAmount = from === 'USDC' && balance && balance.raw > FEE_RESERVE ? formatUnits(balance.raw - FEE_RESERVE, 6) : null
+  const applyPreset = (preset: string) => {
+    const value = preset === 'MAX' ? maxAmount : preset
+    if (value === null) return
+    setAmount(value)
+    setDone(null)
+    setFailure(null)
+  }
 
   const onArc = isConnected && chainId === CHAIN_ID
   const valid = /^\d*\.?\d+$/.test(amount) && Number(amount) > 0
@@ -162,6 +174,20 @@ export function SwapPanel() {
           }}
           className="display mt-2 w-full bg-transparent text-3xl font-semibold tabular-nums outline-none placeholder:text-white/20"
         />
+        <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label="Quick amounts">
+          {presets.map((preset) => (
+            <button
+              key={preset}
+              type="button"
+              onClick={() => applyPreset(preset)}
+              disabled={preset === 'MAX' && maxAmount === null}
+              className="ghost-btn min-h-8 border px-3 text-xs font-semibold tabular-nums disabled:opacity-40"
+              style={{ borderColor: 'var(--border)' }}
+            >
+              {preset}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="-my-2 flex justify-center">

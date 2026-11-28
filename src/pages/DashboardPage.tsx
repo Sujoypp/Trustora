@@ -1,7 +1,6 @@
 import { ArrowDownLeft, ArrowUpRight, BadgeCheck, BarChart3, Lightbulb, UserRound, BadgeCheck as ProofIcon, CalendarClock, ExternalLink, FileText, Handshake, Link2, Network, QrCode, Split } from 'lucide-react'
 import { AddressBadge } from '@/components/AddressBadge'
 import { StatusPill } from '@/components/ActivityFeed'
-import { AnalyticsPanel } from '@/components/AnalyticsPanel'
 import { PortfolioStrip } from '@/components/PortfolioStrip'
 import { FeatureCard } from '@/components/FeatureCard'
 import { NetworkMetrics } from '@/components/NetworkPill'
@@ -82,15 +81,11 @@ export function DashboardPage() {
         />
       </div>
 
-      <div className="rise" style={{ '--i': 1 } as React.CSSProperties}>
-        <AnalyticsPanel payments={payments} balanceRaw={balanceRaw} hideBalance={hide} />
-      </div>
 
-      <h2 className="eyebrow mt-2">Core tools</h2>
       <section aria-label="Core tools" className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <FeatureCard
           title="Send & Receive"
-          description="Instant peer-to-peer USDC transfers, a QR code to get paid, and an optional gasless-pay preview."
+          description="Peer-to-peer USDC transfers with a live USDC fee estimate, and a QR code to get paid."
           to="/send"
           icon={SendIcon}
           color="#4f8cff"
@@ -117,7 +112,7 @@ export function DashboardPage() {
 
         <FeatureCard
           title="Swap"
-          description="Fast, low-slippage swaps between USDC, EURC and cirBTC on Arc Mainnet, with a live rate preview."
+          description="Fast, low-slippage swaps between USDC, EURC and cirBTC, with quick amount presets and a live rate."
           to="/swap"
           icon={SwapIcon}
           color="#22d3ee"
@@ -131,7 +126,7 @@ export function DashboardPage() {
 
         <FeatureCard
           title="Bridge"
-          description="Move native USDC between Arc Mainnet and other chains with Circle's Cross-Chain Transfer Protocol."
+          description="Move native USDC to and from Arc Mainnet across chains with Circle's Cross-Chain Transfer Protocol (CCTP)."
           to="/bridge"
           icon={BridgeIcon}
           color="#4f8cff"
@@ -241,8 +236,11 @@ export function DashboardPage() {
         </FeatureCard>
       </section>
 
-      <section aria-label="Payment tools" className="space-y-3">
-        <h2 className="eyebrow">Payment tools</h2>
+      <details aria-label="More tools" className="group space-y-3">
+        <summary className="ghost-btn flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 border px-4 text-sm font-semibold [&::-webkit-details-marker]:hidden" style={{ borderColor: 'var(--border)' }}>
+          <span>More tools: escrow, invoices, links, split, recurring, analytics and proof</span>
+          <span aria-hidden="true" className="transition-transform duration-200 group-open:rotate-180">&#9662;</span>
+        </summary>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {TOOLS.map((tool, i) => (
             <FeatureCard key={tool.to} title={tool.title} description={tool.description} to={tool.to} icon={tool.icon} color={i % 2 ? '#22d3ee' : '#4f8cff'} order={7 + i}>
@@ -252,7 +250,7 @@ export function DashboardPage() {
             </FeatureCard>
           ))}
         </div>
-      </section>
+      </details>
     </div>
   )
 }

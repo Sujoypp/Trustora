@@ -4,15 +4,15 @@
 
 /* TRUSTORA design system: midnight navy surfaces, electric blue + cyan accents, a touch of violet. */
 :root {
-  --bg: #040814;
-  --card: #0b1328;
-  --header: #060c1c;
+  --bg: #05070c;
+  --card: #0c101b;
+  --header: #070a12;
   --ink: #f1f5ff;
   --ink-2: #cdd8f0;
   --muted: #93a4c3;
   --subtle: #66779a;
-  --border: rgba(130, 170, 255, 0.14);
-  --border-hot: rgba(96, 165, 250, 0.5);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-hot: rgba(99, 102, 241, 0.55);
   --accent: #4f8cff;
   --accent-hover: #7aa9ff;
   --violet: #8b5cf6;
@@ -42,22 +42,8 @@ body::before {
   pointer-events: none;
   background-color: var(--bg);
   background-image:
-    radial-gradient(900px 520px at 8% -6%, rgba(79, 140, 255, 0.2), transparent 62%),
-    radial-gradient(760px 480px at 96% 4%, rgba(139, 92, 246, 0.11), transparent 62%),
-    radial-gradient(900px 560px at 88% 104%, rgba(34, 211, 238, 0.1), transparent 62%);
-}
-
-/* Subtle grid that fades out toward the bottom */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-image: linear-gradient(rgba(150, 190, 255, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(150, 190, 255, 0.04) 1px, transparent 1px);
-  background-size: 44px 44px;
-  -webkit-mask-image: radial-gradient(ellipse 85% 65% at 50% 0%, #000 20%, transparent 78%);
-  mask-image: radial-gradient(ellipse 85% 65% at 50% 0%, #000 20%, transparent 78%);
+    radial-gradient(900px 520px at 6% -8%, rgba(99, 102, 241, 0.14), transparent 62%),
+    radial-gradient(900px 560px at 94% 106%, rgba(34, 211, 238, 0.1), transparent 62%);
 }
 
 body {
@@ -103,9 +89,9 @@ p {
 /* Layered glass: a lit top edge, a deep soft shadow, and a navy gradient body. Blur is reserved for the header and dialogs. */
 .glass {
   position: relative;
-  background: linear-gradient(180deg, rgba(19, 31, 62, 0.78), rgba(9, 16, 36, 0.82));
+  background: #0c101b;
   border: 1px solid var(--border);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 18px 44px -22px rgba(0, 0, 0, 0.7);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 18px 44px -24px rgba(0, 0, 0, 0.8);
   transition: border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
 }
 
@@ -296,18 +282,20 @@ select:focus-visible {
 }
 
 
-/* Brand wordmark: brushed silver letters */
+/* Brand wordmark: crisp pure white */
 .brand-title {
-  color: #e8eef8;
+  color: #ffffff;
   line-height: 1;
 }
 
-@supports (background-clip: text) or (-webkit-background-clip: text) {
-  .brand-title {
-    background-image: linear-gradient(180deg, #ffffff 0%, #cfd9ea 52%, #eef3fb 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+/* Logo: a slow dual-tone orbital ring around the shield */
+.logo-ring {
+  animation: spin 8s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-ring {
+    animation: none;
   }
 }
 
@@ -431,7 +419,7 @@ select:focus-visible {
 
 .feature-card:hover,
 .feature-card:focus-visible {
-  transform: translateY(-4px);
+  transform: translateY(-3px);
   border-color: var(--border-hot);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 22px 46px -22px color-mix(in srgb, var(--c, #4f8cff) 55%, transparent);
 }

@@ -4,10 +4,13 @@ import { useQueryClient } from '@tanstack/react-query'
 import { ConnectKitButton } from 'connectkit'
 import { ArrowRight, ArrowRightLeft, Check, ExternalLink, Info, Loader2, TriangleAlert } from 'lucide-react'
 import type { BridgeResult } from '@circle-fin/app-kit'
+import { BridgeSteps, type BridgeStage } from '@/components/BridgeSteps'
 import { DynamicFeeNote } from '@/components/DynamicFeeNote'
 import { FailureNotice } from '@/components/FailureNotice'
 import { BRIDGE_CHAINS, createWalletAdapter, getKit, type BridgeChainName } from '@/lib/circleKit'
+import { useChainUsdc } from '@/hooks/useChainBalances'
 import { notifyError, type ErrorInfo } from '@/lib/errors'
+import { formatUsdc } from '@/lib/format'
 import { formatDecimalString } from '@/lib/tokenFormat'
 import { shortAddress } from '@/lib/format'
 import { NETWORK_NAME } from '@/lib/trustora'
@@ -37,11 +40,19 @@ export function BridgePanel() {
   const [busy, setBusy] = useState(false)
   const [failure, setFailure] = useState<ErrorInfo | null>(null)
   const [result, setResult] = useState<BridgeResult | null>(null)
+  const [stage, setStage] = useState<BridgeStage>('idle')
 
   const fromName: BridgeChainName = into ? other : 'Arc'
   const toName: BridgeChainName = into ? 'Arc' : other
   const fromChain = BRIDGE_CHAINS.find((c) => c.kit === fromName)!.chain
   const valid = /^\d*\.?\d+$/.test(amount) && Number(amount) > 0
+  // Validate against the real USDC balance on the source chain (read from that chain's public RPC).
+  const sourceBalance = useChainUsdc(address, fromChain.id)
+  const sourceRaw = sourceBalance.data ?? null
+  const amountRaw = valid ? BigInt(Math.round(Number(amount) * 1_000_000)) : null
+  const problems: string[] = []
+  if (amountRaw !== null && sourceRaw !== null && amountRaw > sourceRaw) problems.push(`Amount is higher than your USDC balance on ${chainLabel(fromName)} (${formatUsdc(sourceRaw)} USDC).`)
+  const lowGas = fromName === 'Arc' && amountRaw !== null && sourceRaw !== null && amountRaw <= sourceRaw && sourceRaw - amountRaw < 50_000n
   const key = isConnected && valid && address ? `${address}|${fromName}|${toName}|${amount}` : null
   const current = quote && quote.key === key ? quote : null
   const loading = key !== null && current === null
@@ -79,18 +90,32 @@ export function BridgePanel() {
     setBusy(true)
     setResult(null)
     setFailure(null)
+    setStage('initiate')
+    const live = { active: true }
     try {
       const [kit, adapter] = await Promise.all([getKit(), createWalletAdapter(connector, fromChain)])
+      // Steps follow Circle's own events: approve and burn, then the attestation, then the mint.
+      kit.on('*', (payload) => {
+        if (!live.active) return
+        const method = 'method' in payload ? payload.method : ''
+        const state = (payload as { values?: { state?: string } }).values?.state
+        if (method === 'burn') setStage('attestation')
+        else if (method === 'fetchAttestation' && state === 'success') setStage('complete')
+        else if (method === 'mint' || method === 'forward') setStage('done')
+      })
       const res = await kit.bridge({ from: { adapter, chain: fromName }, to: { adapter, chain: toName, useForwarder: true }, amount })
       setResult(res)
+      setStage(res.state === 'success' ? 'done' : 'idle')
       if (res.state === 'success') {
         setAmount('')
         setQuote(null)
         void queryClient.invalidateQueries()
       }
     } catch (e) {
+      setStage('idle')
       setFailure(notifyError(e))
     } finally {
+      live.active = false
       setBusy(false)
     }
   }
@@ -110,6 +135,9 @@ export function BridgePanel() {
   }
 
   const failed = result?.steps.find((s) => s.state === 'error')
+  const failedAt: 0 | 1 | 2 | null = !failed ? null : /attest/i.test(failed.name) ? 1 : /mint|forward/i.test(failed.name) ? 2 : 0
+  const showSteps = busy || result !== null || valid
+  const stepStage: BridgeStage = result?.state === 'success' ? 'done' : failedAt !== null ? (['initiate', 'attestation', 'complete'] as const)[failedAt] : stage
 
   return (
     <section className="glass space-y-4 p-5 sm:p-6" aria-labelledby="bridge-title">
@@ -205,6 +233,24 @@ export function BridgePanel() {
         </dl>
       )}
       {current?.fees && <DynamicFeeNote nonUsdcGas={current.otherGas} />}
+      {showSteps && <BridgeSteps stage={stepStage} failedAt={failedAt} from={chainLabel(fromName)} to={chainLabel(toName)} />}
+      {sourceRaw !== null && (
+        <p className="text-xs tabular-nums" style={{ color: 'var(--muted)' }}>
+          Available on {chainLabel(fromName)}: <span style={{ color: 'var(--ink)' }}>{formatUsdc(sourceRaw)} USDC</span>
+        </p>
+      )}
+      {problems.map((m) => (
+        <p key={m} className="flex items-start gap-2 text-xs" style={{ color: 'var(--danger)' }} role="alert">
+          <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+          {m}
+        </p>
+      ))}
+      {lowGas && (
+        <p className="flex items-start gap-2 text-xs" style={{ color: 'var(--amber)' }}>
+          <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+          This leaves under 0.05 USDC on Arc Mainnet, which also pays network fees. Keep a little back.
+        </p>
+      )}
       <FailureNotice info={failure} onDismiss={() => setFailure(null)} />
       {current?.error && (
         <p className="flex items-start gap-2 text-xs" style={{ color: 'var(--amber)' }} role="alert">
@@ -257,7 +303,7 @@ export function BridgePanel() {
           )}
         </ConnectKitButton.Custom>
       ) : (
-        <button onClick={() => void bridge()} disabled={!valid || busy || loading || Boolean(current?.error)} className="cta min-h-12 w-full text-base font-semibold">
+        <button onClick={() => void bridge()} disabled={!valid || busy || loading || Boolean(current?.error) || problems.length > 0} className="cta min-h-12 w-full text-base font-semibold">
           {busy ? 'Bridging... confirm in your wallet' : valid ? `Bridge ${amount} USDC to ${chainLabel(toName)}` : 'Enter an amount'}
         </button>
       )}

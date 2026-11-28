@@ -5,7 +5,7 @@
  * Read-only: nothing is signed or sent.
  */
 import { mkdirSync, writeFileSync } from 'node:fs'
-import { createPublicClient, http, isAddress, type Address } from 'viem'
+import { createPublicClient, http, isAddress } from 'viem'
 import { requireChain } from '../src/onchain-facts'
 import { scanAllPaymentLogs } from '../src/lib/historyScan'
 

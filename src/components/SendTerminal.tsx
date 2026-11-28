@@ -4,19 +4,19 @@ import { ConnectKitButton } from 'connectkit'
 import { useAccount } from 'wagmi'
 import { getAddress, isAddress, type Address, type Hex } from 'viem'
 import { TokenUSDC } from '@web3icons/react'
-import { AlertCircle, ArrowDownLeft, ArrowUpRight, Fuel, Info, Loader2, Lock, X } from 'lucide-react'
+import { AlertCircle, ArrowDownLeft, ArrowUpRight, Info, Loader2, Lock, X } from 'lucide-react'
 import { Amount, parseAmount, usdcDecimalsFor } from '@/onchain-money'
 import { TxProgress } from '@/components/TxProgress'
 import { ReceivePanel } from '@/components/ReceivePanel'
 import { RecipientField } from '@/components/RecipientField'
 import { MultisigGuard } from '@/components/MultisigGuard'
-import { DynamicFeeNote } from '@/components/DynamicFeeNote'
+import { CostSummary } from '@/components/CostSummary'
 import { GasInUsdc } from '@/components/GasInUsdc'
 import { useGuard } from '@/lib/guard'
 import { MASK } from '@/lib/prefs'
 import { useSendPayment } from '@/hooks/useSendPayment'
 import { CHAIN_ID, MAX_NOTE_BYTES, ROUTER_ADDRESS, type Payment, type Rail, type ReceiptData } from '@/lib/trustora'
-import { formatFeeUsdc, formatUsdc, noteBytes } from '@/lib/format'
+import { formatUsdc, noteBytes } from '@/lib/format'
 
 /** Reserve used by MAX when no fee estimate exists yet (0.05 USDC, 6-decimal view). */
 const FALLBACK_RESERVE = 50_000n
@@ -267,31 +267,7 @@ export function SendTerminal({ balance, onPending, onSettled, onSuccess, warnAbo
 
         <GasInUsdc feeUsdc={fee?.usdc} loading={feeLoading} />
 
-        <div className="rounded-2xl border px-4 py-3 text-sm" style={{ borderColor: 'var(--border)', background: 'rgba(255,255,255,0.025)' }}>
-          <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1.5" style={{ color: 'var(--muted)' }}>
-              <Fuel className="size-4" />
-              {fee?.kind === 'approval' ? 'Allowance fee' : 'Network fee'}
-            </span>
-            <span className="tabular-nums" style={{ color: 'var(--ink-2)' }}>
-              {feeLoading ? (
-                <span className="shimmer inline-block h-3.5 w-16 rounded" />
-              ) : fee ? (
-                `~${formatFeeUsdc(fee.usdc)} USDC`
-              ) : (
-                '--'
-              )}
-            </span>
-          </div>
-          {fee?.kind === 'approval' && (
-            <p className="mt-1.5 text-xs" style={{ color: 'var(--subtle)' }}>
-              The payment fee is estimated once the allowance is in place.
-            </p>
-          )}
-          <div className="mt-2">
-            <DynamicFeeNote />
-          </div>
-        </div>
+        <CostSummary amountRaw={amountRaw} feeUsdc={fee?.usdc} feeLoading={feeLoading} approval={fee?.kind === 'approval'} />
 
         <AnimatePresence initial={false}>
           {(problems.length > 0 || error || !ROUTER_ADDRESS) && (

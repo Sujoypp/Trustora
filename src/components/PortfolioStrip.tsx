@@ -1,6 +1,8 @@
 import { memo, useEffect, useState } from 'react'
 import { ConnectKitButton } from 'connectkit'
-import { Link2, QrCode, Send, TrendingDown, TrendingUp } from 'lucide-react'
+import { ChevronDown, Layers, Link2, QrCode, Send, TrendingDown, TrendingUp } from 'lucide-react'
+import { useAccount } from 'wagmi'
+import { ChainBreakdown } from '@/components/ChainBreakdown'
 import { UsdcVerifiedBadge } from '@/components/UsdcVerifiedBadge'
 import { CURRENCIES, symbolOf, toFiat, useCurrency, useFxRates } from '@/lib/fiat'
 import { formatUsdc } from '@/lib/format'
@@ -35,6 +37,8 @@ export const PortfolioStrip = memo(function PortfolioStrip({ connected, balanceR
     return () => clearInterval(t)
   }, [])
 
+  const { address } = useAccount()
+  const [showChains, setShowChains] = useState(false)
   const ready = connected && balanceRaw !== undefined
   // Counts up or down when the balance changes (a deposit or a payment).
   const animated = balanceRaw ?? 0n
@@ -50,6 +54,7 @@ export const PortfolioStrip = memo(function PortfolioStrip({ connected, balanceR
   const up = net >= 0n
 
   return (
+    <>
     <section className="glass gradient-border relative flex flex-col gap-6 overflow-hidden p-5 sm:p-6 lg:flex-row lg:items-end lg:justify-between" aria-label="Total balance">
       <svg className="pointer-events-none absolute -right-16 -top-24 size-80 opacity-60" viewBox="0 0 320 320" fill="none" aria-hidden="true">
         <defs>
@@ -136,8 +141,22 @@ export const PortfolioStrip = memo(function PortfolioStrip({ connected, balanceR
             </span>
           )}
         </div>
-        <div className="mt-4">
+        <div className="mt-4 flex flex-wrap items-center gap-3">
           <UsdcVerifiedBadge />
+          {connected && (
+            <button
+              type="button"
+              onClick={() => setShowChains((v) => !v)}
+              aria-expanded={showChains}
+              aria-controls="chain-breakdown"
+              className="ghost-btn flex min-h-9 items-center gap-1.5 border px-3 text-xs font-semibold"
+              style={{ borderColor: 'var(--border)', color: showChains ? '#9fe9f5' : 'var(--muted)' }}
+            >
+              <Layers className="size-3.5" aria-hidden="true" />
+              USDC by chain
+              <ChevronDown className={`size-3.5 transition-transform duration-200 ${showChains ? 'rotate-180' : ''}`} aria-hidden="true" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -166,5 +185,11 @@ export const PortfolioStrip = memo(function PortfolioStrip({ connected, balanceR
         )}
       </div>
     </section>
+    {connected && showChains && (
+      <div id="chain-breakdown" className="mt-4">
+        <ChainBreakdown owner={address} hideBalance={hideBalance} />
+      </div>
+    )}
+    </>
   )
 })

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { usePublicClient } from 'wagmi'
-import { zeroAddress, type Address, type Hex } from 'viem'
+import { zeroAddress, type Address } from 'viem'
 import { Amount, gasTokenToUsdc } from '@/onchain-money'
 import { requireChain } from '@/onchain-facts'
 import { scanPaymentLogs, type RawPaymentLog } from '@/lib/historyScan'

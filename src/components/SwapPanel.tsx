@@ -280,6 +280,40 @@ export function SwapPanel() {
         </p>
       )}
 
+      {est && valid && (
+        <div className="rounded-2xl border px-4 py-3 text-sm" style={{ borderColor: 'rgba(99,102,241,0.3)', background: 'rgba(99,102,241,0.06)' }} aria-label="Cost preview">
+          <p className="eyebrow mb-2">Cost preview</p>
+          <dl className="space-y-1.5">
+            <div className="flex items-center justify-between gap-3">
+              <dt style={{ color: 'var(--muted)' }}>You pay</dt>
+              <dd className="tabular-nums" style={{ color: 'var(--ink-2)' }}>
+                {amount} {label(from)}
+              </dd>
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <dt style={{ color: 'var(--muted)' }}>Network fee (USDC)</dt>
+              <dd className="text-right text-xs" style={{ color: 'var(--ink-2)' }}>
+                Set by your wallet at signing{gasPrice !== undefined ? `, gas price now ${Number(formatGwei(gasPrice)).toLocaleString(undefined, { maximumFractionDigits: 1 })} gwei` : ''}
+              </dd>
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <dt className="font-semibold" style={{ color: 'var(--ink)' }}>
+                Total USDC deducted
+              </dt>
+              <dd className="text-right font-bold tabular-nums" style={{ color: '#ffffff' }}>
+                {from === 'USDC' ? `${amount} USDC + network fee` : 'Network fee only'}
+              </dd>
+            </div>
+          </dl>
+          <p className="mt-2 text-xs" style={{ color: 'var(--subtle)' }}>
+            The swap transaction is built by the swap provider, so its exact gas is only known when your wallet prepares it. The wallet shows the final USDC fee before you confirm.
+          </p>
+          <div className="mt-2">
+            <DynamicFeeNote />
+          </div>
+        </div>
+      )}
+
       <p className="flex items-start gap-2 text-xs text-pretty" style={{ color: 'var(--muted)' }}>
         <Info className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
         Swaps are routed through a swap service provider (a third-party aggregator such as LiFi, or Circle) that can vary by route and change over time, and you are subject to its terms. This moves real funds on {NETWORK_NAME}: start with a small amount.

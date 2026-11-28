@@ -14,7 +14,7 @@ export function ReceivePanel({ address }: { address?: string }) {
   const [amount, setAmount] = useState('')
   const [note, setNote] = useState('')
   const [qrMode, setQrMode] = useState<QrMode>('link')
-  const [copied, setCopied] = useState<'link' | 'address' | null>(null)
+  const [copied, setCopied] = useState<'link' | 'address' | 'message' | null>(null)
 
   // Resolve the shareable base once; copy, share and the QR code wait for it.
   useEffect(() => {
@@ -62,6 +62,22 @@ export function ReceivePanel({ address }: { address?: string }) {
     }
   }
 
+  const message = link
+    ? `Please pay ${amount ? `${amount} USDC` : 'USDC'} on Arc Mainnet to ${address}${note ? `\nReference: ${note}` : ''}\nPay here: ${link}`
+    : null
+
+  const copyMessage = async () => {
+    if (!message) return
+    try {
+      await navigator.clipboard.writeText(message)
+      setCopied('message')
+      toast.success('Payment request copied')
+      setTimeout(() => setCopied(null), 1800)
+    } catch {
+      toast.error('Could not copy. Select the text and copy it manually.')
+    }
+  }
+
   const share = async () => {
     if (!link) return
     try {
@@ -74,7 +90,7 @@ export function ReceivePanel({ address }: { address?: string }) {
   return (
     <div className="space-y-4">
       <p className="text-sm text-pretty" style={{ color: 'var(--muted)' }}>
-        Create a link or QR code. Whoever opens it gets a payment form filled in for you.
+        <strong style={{ color: 'var(--ink)' }}>Request USDC.</strong> Set an amount and a reference, then share the link, QR code or message. Whoever opens it gets a payment form filled in for you, on Arc Mainnet.
       </p>
 
       <div className="glass-inner rounded-2xl p-4">
@@ -104,8 +120,8 @@ export function ReceivePanel({ address }: { address?: string }) {
         <input
           value={note}
           onChange={(e) => setNote(e.target.value.slice(0, LINK_NOTE_MAX))}
-          placeholder="What is this payment for? (optional)"
-          aria-label="Payment note (optional)"
+          placeholder="Reference or memo, for example INV-1024 (optional)"
+          aria-label="Reference memo (optional)"
           className="w-full bg-transparent text-sm outline-none placeholder:text-slate-600"
         />
       </div>
@@ -164,6 +180,15 @@ export function ReceivePanel({ address }: { address?: string }) {
           {copied === 'address' ? 'Copied' : shortAddress(address)}
         </button>
       </div>
+      <button
+        onClick={() => void copyMessage()}
+        disabled={!message}
+        className="ghost-btn flex min-h-11 w-full items-center justify-center gap-2 rounded-full border text-sm font-semibold disabled:opacity-40"
+        style={{ borderColor: 'var(--border)', color: 'var(--ink-2)' }}
+      >
+        {copied === 'message' ? <Check className="size-4" /> : <Copy className="size-4" />}
+        {copied === 'message' ? 'Copied' : 'Copy request message'}
+      </button>
       {canShare && (
         <button
           onClick={() => void share()}

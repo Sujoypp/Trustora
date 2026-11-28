@@ -7,6 +7,7 @@ import { createPublicClient, erc20Abi, http, isAddress, type Address } from 'vie
 import { getUsdc, requireChain } from '../src/onchain-facts'
 import { scanPaymentLogs } from '../src/lib/historyScan'
 import { escrowAbi, flowsAbi } from '../src/lib/contracts'
+import { BREAKDOWN_CHAINS, readChainUsdc } from '../src/hooks/useChainBalances'
 
 const results: { name: string; ok: boolean; detail: string }[] = []
 const record = (name: string, ok: boolean, detail: string) => {
@@ -45,6 +46,11 @@ const holders = [usdc, MULTICALL3, '0x000000000000000000000000000000000000dEaD' 
 const single = await Promise.all(holders.map((h) => client.readContract({ address: usdc, abi: erc20Abi, functionName: 'balanceOf', args: [h] })))
 const multi = await client.multicall({ contracts: holders.map((h) => ({ address: usdc, abi: erc20Abi, functionName: 'balanceOf', args: [h] }) as const), allowFailure: false, multicallAddress: MULTICALL3 })
 record('Multicall3 returns the same data as single reads', single.every((v, i) => v === multi[i]), `${holders.length} reads in one request`)
+
+// Cross-chain USDC reads used by the balance breakdown and the bridge validation (each chain's public RPC from the registry).
+const reads = await Promise.allSettled(BREAKDOWN_CHAINS.map((c) => readChainUsdc(c.id, '0x000000000000000000000000000000000000dEaD')))
+const answered = reads.filter((r) => r.status === 'fulfilled').length
+record('Cross-chain USDC balance reads answer', answered >= 5, `${answered}/${BREAKDOWN_CHAINS.length} chains: ${BREAKDOWN_CHAINS.map((c, i) => `${c.label} ${reads[i]?.status === 'fulfilled' ? 'ok' : 'unavailable'}`).join(', ')}`)
 
 const router = env('VITE_TRUSTORA_PAY_ADDRESS_MAINNET')
 const routerBlock = process.env.VITE_TRUSTORA_PAY_DEPLOY_BLOCK_MAINNET

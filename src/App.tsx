@@ -1,6 +1,5 @@
 import { Suspense, lazy, useCallback, useEffect, useMemo, useState, type ReactElement } from 'react'
 import { useAccount, useGasPrice } from 'wagmi'
-import type { Hex } from 'viem'
 import { toast } from 'sonner'
 import { AppFooter } from '@/components/AppFooter'
 import { ConnectionStatus } from '@/components/ConnectionStatus'
@@ -38,7 +37,7 @@ import {
 } from '@/lib/prefetch'
 import { navigate, useRoute } from '@/lib/router'
 import { matchRoute } from '@/lib/routes'
-import { CHAIN_ID, ROUTER_ADDRESS, type Payment, type ReceiptData } from '@/lib/trustora'
+import { CHAIN_ID, ROUTER_ADDRESS, type ReceiptData } from '@/lib/trustora'
 
 // Only the Dashboard ships in the first bundle; every other screen is preloaded while the browser is idle.
 const ExchangePage = lazy(loadExchange)
